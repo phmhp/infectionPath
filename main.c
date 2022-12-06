@@ -51,7 +51,7 @@ int main(int argc, const char * argv[]) {
     	for( i=0;i<N_HISTORY;i++)
 		{
    			fscanf(fp, "%d" , &placeHist[i]);
-   			//fscanf로 i번째 감염경로 숫자를 읽어 placeHist[i]에 저장;
+   			//fscanf로 받아온 정보를 모아서 감염정보구조체에 집어넣을 것.  
 		}
 	ifctele_genElement(pIndex,age, time, placeHist[N_HISTORY]);
 	}
@@ -154,16 +154,18 @@ int main(int argc, const char * argv[]) {
 				
 				
             case MENU_TRACK: //4
-            {
+            { 	//감염의 시작인 첫 감염자는 printf("%d is first infector!!",PID); 출력해야함.
                 printf("Patient index :");
 				scanf("%d",&pIndex); //사용자가 고른 환자의 번호
-                //감염의 시작인 첫 감염자는 printf("%d is first infector!!",PID); 출력해야함.
 				
-				//감염시기... 
-				
-				
-				printf("[TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,  ifc_pIndex,  infected_time,  ifc_place);  //ifc_pIndex , ifc_time , ifc_place 추가로 정의해도 되는지? 
-                break;
+               //같은 시기에 같은 장소에 있던 경우를 알아내고
+			   //비교대상의 감염확인시점이 더  이르면  감염자. =>맞나? 
+			   //이 과정을 계속 반복 (더 이상 같은 시기/같은 장소에 있던 사람들 중 더 이른 사람이 없을 때 까지... 
+				for () {
+				printf("[TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,  infected_pIndex,  infected_time,  infected_place);  //infected_pIndex , infected_time , infected_place 추가로 정의해도 되는지? 
+                } 
+                printf("The first infector of %d is %d", pIndex,infcted_pIndex); 
+				break;
             }
              
             default:

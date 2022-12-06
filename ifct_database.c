@@ -21,16 +21,16 @@ typedef struct node{
 } node_t;
 
 
-static node_t* list_database = NULL;
+static node_t* list_database = NULL; 
 static node_t* listPtr = NULL;
 static int list_cnt = 0;
 
 
 //Inner functions (cannot used at the outside of this file)
-static node_t* genNode(void)
+static node_t* genNode(void)   
 {
     //allocate memory for creating the node
-    node_t* ndPtr = (node_t*)malloc(sizeof(node_t));
+    node_t* ndPtr = (node_t*)malloc(sizeof(node_t));  
     if (ndPtr != NULL)
     {
         ndPtr->next = NULL;
@@ -123,7 +123,7 @@ int ifctdb_addTail(void* obj)
     //add node to the list tail
     if (list_database == NULL)
     {
-        list_database = newNdPtr;
+        list_database = newNdPtr; 
         newNdPtr->index = 0;
     }
     else
