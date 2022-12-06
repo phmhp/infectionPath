@@ -10,7 +10,7 @@
 
 #include "ifct_database.h"
 
-#define LIST_END -1
+#define LIST_END -1 
 
 //node definition for linked list
 typedef struct node{

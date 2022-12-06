@@ -25,7 +25,7 @@ int trackInfester(int patient_no, int *detected_time, int *place);
 int main(int argc, const char * argv[]) {
     
     int menu_selection;
-    void *ifct_element;
+    void *ifct_element; //구조체정보 반환받을 때 사용 
     FILE* fp;
     int pIndex, age, time;
     int placeHist[N_HISTORY];
@@ -45,17 +45,27 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
     
+    #if  
     //1-2. loading each patient informations
+	//while문을 한번 돌 때 환자정보를 구조체로 만들어서 linked list로 넣는 동작을 함. 
     while (3 == fscanf(fp, "%d %d %d" , &pIndex, &age, &time))
-    {	int i =0;
-    	for( i=0;i<N_HISTORY;i++)
+    {	
+		int i =0;
+    	for( i=0;i<N_HISTORY;i++)//for loop으로 받아서 밑에 함수로 전달. 
 		{
    			fscanf(fp, "%d" , &placeHist[i]);
    			//fscanf로 받아온 정보를 모아서 감염정보구조체에 집어넣을 것.  
 		}
-	ifctele_genElement(pIndex,age, time, placeHist[N_HISTORY]);
+		ifct_element = ifctele_genElement(pIndex, age , time, placeHist[N_HISTORY] );  
+		//element.c파일로 각 변수에 담긴 값들을 보내서 구조체로 만들음.
+		 
+		ifctdb_addTail(ifct_element); 
+		//이 함수를 실행하면 database.c로 구조체를 보낼 수 있음. 
+		//ifct_element라는 포인터는 바로 위에서  ifctele_genElement함수를 통해 구조체정보를 저장하고있는 상태. 
 	}
-    
+   
+	 
+    #endif
     //1-3. FILE pointer close
     fclose(fp);
     
@@ -151,7 +161,7 @@ int main(int argc, const char * argv[]) {
                 break;
 			}    
 				
-				
+				 
 				
             case MENU_TRACK: //4
             { 	//감염의 시작인 첫 감염자는 printf("%d is first infector!!",PID); 출력해야함.
