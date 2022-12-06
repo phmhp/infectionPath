@@ -1,4 +1,4 @@
-//가장 최근  수정 날짜: 2022.12.06 
+//최근  수정 날짜: 2022.12.07
 
 
 //  main.c
@@ -89,24 +89,20 @@ int main(int argc, const char * argv[]) {
                 break;
 
 
-                 //포인터를 함수를 통해 넘겨주면, 그 함수에서 구조체 멤버(나이)에 접근해서 값을 함수로 나타내주는 것.
-				//main.c는 구조체 정보를 모름. 그래서 ifctele.getAge함수를 통해 구조체 멤버(나이)값을 가져오는 것. 
+            //포인터를 함수를 통해 넘겨주면, 그 함수에서 구조체 멤버(나이)에 접근해서 값을 함수로 나타내주는 것.
+			//main.c는 구조체 정보를 모름. 그래서 ifctele.getAge함수를 통해 구조체 멤버(나이)값을 가져오는 것. 
             case MENU_PATIENT: //1
             {	//ifct_element                                                                                              => 그대로 타이핑? 
             	printf("Patient index :");
                 scanf("%d", &pIndex);//사용자로부터 환자번호를 입력받음
                 printf("--------------------------------------------\n");
-                //if (pID == pIndex)
-				printf("Patient index : %d\n",pIndex);
-                printf("Patient age : %d\n", ifctele_getAge(ifct_element));
-                printf("Detected time : %d\n",  ifctele_getinfestedTime(ifct_element));
-				printf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n", 
-				ifctele_getPlaceName(placeHist[0]),ifctele_getHistPlaceIndex(placeHist[0]), 
-				ifctele_getPlaceName(placeHist[1]),ifctele_getHistPlaceIndex(placeHist[1]), 
-				ifctele_getPlaceName(placeHist[2]),ifctele_getHistPlaceIndex(placeHist[2]), 
-				ifctele_getPlaceName(placeHist[3]),ifctele_getHistPlaceIndex(placeHist[3]), 
-				ifctele_getPlaceName(placeHist[4]),ifctele_getHistPlaceIndex(placeHist[4]));
-				   break;
+                //if (pIndex 정상범위의 숫자이면)
+                ifctele_printElement(ifct_element); //확인해봐야함. 
+                printf("--------------------------------------------\n");
+				
+				//elif  (pIndex 인덱스번호 범위 밖_(너무 크거나 음수일때) / 영문자나 특수문자)
+				//print 에러메세지 
+				break;
 			}   
 			
 			
@@ -114,22 +110,12 @@ int main(int argc, const char * argv[]) {
             case MENU_PLACE: //2
             {         
                 printf("Place Name : ");
-                scanf("%s",&Pname); //사용자로부터 장소를 입력받음
+                scanf("%s",&Pname); 
                 printf("--------------------------------------------\n");
-                //if (strcmp(Pname,ifctele_getPlaceName(placeHist[4]))==0)
-            //여기서 뭔가 조건으로 한번 묶어줘야할 것 같음. 
-				{
-				printf("Patient index : %d\n",pIndex);
-                printf("Patient age : %d\n", ifctele_getAge(ifct_element));
-                printf("Detected time : %d\n",  ifctele_getinfestedTime(ifct_element));
-				printf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n", 
-				ifctele_getPlaceName(placeHist[0]),ifctele_getHistPlaceIndex(placeHist[0]), 
-				ifctele_getPlaceName(placeHist[1]),ifctele_getHistPlaceIndex(placeHist[1]), 
-				ifctele_getPlaceName(placeHist[2]),ifctele_getHistPlaceIndex(placeHist[2]), 
-				ifctele_getPlaceName(placeHist[3]),ifctele_getHistPlaceIndex(placeHist[3]), 
-				ifctele_getPlaceName(placeHist[4]),ifctele_getHistPlaceIndex(placeHist[4]));
+                //if (strcmp(Pname,ifctele_getPlaceName(placeHist[4]))==0) 
+				ifctele_printElement(ifct_element); //확인해봐야함. 
 				printf("--------------------------------------------\n");
-				}
+				//default //오타나거나 숫자입력하거나 감염자 없는 도시여도 결과값 똑같이출력됨. 
 				printf("There are %d patients detected in %s.\n", count, Pname);
 				 break;
 			}   
@@ -142,43 +128,52 @@ int main(int argc, const char * argv[]) {
                 scanf("%d",&minAge);
                 printf("maximal age : ");
                 scanf("%d", &maxAge);
-				//if (age >=minAge && age <=maxAge)
-			//여기서 뭔가 조건으로 한번 묶어줘야할 것 같음. 	
-				{
+				//if (age >=minAge && age <=maxAge) 
+				//같은 값일 때, 0일때,영문자 입력 시  구조체 출력은 안되지만 결과값은 나옴.  
 				printf("--------------------------------------------\n");
-				printf("Patient index : %d\n",pIndex);
-                printf("Patient age : %d\n", ifctele_getAge(ifct_element));
-                printf("Detected time : %d\n",  ifctele_getinfestedTime(ifct_element));
-				printf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n", 
-				ifctele_getPlaceName(placeHist[0]),ifctele_getHistPlaceIndex(placeHist[0]), 
-				ifctele_getPlaceName(placeHist[1]),ifctele_getHistPlaceIndex(placeHist[1]), 
-				ifctele_getPlaceName(placeHist[2]),ifctele_getHistPlaceIndex(placeHist[2]), 
-				ifctele_getPlaceName(placeHist[3]),ifctele_getHistPlaceIndex(placeHist[3]), 
-				ifctele_getPlaceName(placeHist[4]),ifctele_getHistPlaceIndex(placeHist[4]));
-				printf("--------------------------------------------\n");
-				}
+				ifctele_printElement(ifct_element); //확인해봐야함. 
 				printf("There are %d patients whose age is between %d and %d.\n", count, minAge, maxAge);
-                break;
+                //elif 음수 / 최소값이 더 클 때 
+                //print 에러메시지  
+				break;
 			}    
 				
 				 
 				
             case MENU_TRACK: //4
-            { 	//감염의 시작인 첫 감염자는 printf("%d is first infector!!",PID); 출력해야함.
+            { 	
                 printf("Patient index :");
-				scanf("%d",&pIndex); //사용자가 고른 환자의 번호
+				scanf("%d",&pIndex); 
 				
-               //같은 시기에 같은 장소에 있던 경우를 알아내고
-			   //비교대상의 감염확인시점이 더  이르면  감염자. =>맞나? 
-			   //이 과정을 계속 반복 (더 이상 같은 시기/같은 장소에 있던 사람들 중 더 이른 사람이 없을 때 까지... 
-				for () {
-				printf("[TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,  infected_pIndex,  infected_time,  infected_place);  //infected_pIndex , infected_time , infected_place 추가로 정의해도 되는지? 
+				//알고리즘 
+				
+				
+				
+				
+				
+				
+				
+				
+				//if 첫 감염자 아니고 일반 감염자일 때 
+				for () 
+				{ //전파자가 몇명이냐에 따라 반복 횟수 달라짐. 
+				//infected_pIndex , infected_time , infected_place 변수정의? get~함수 써서? 
+					printf("[TRACKING] patient %d is infected by %d (time : %d, place : %s)\n",pIndex,  infected_pIndex,  infected_time,  infected_place);  
                 } 
                 printf("The first infector of %d is %d", pIndex,infcted_pIndex); 
-				break;
-            }
-             
-            default:
+			
+               	
+           		//elif patient index로 영문자/너무 큰 값 입력시 
+				//print 에러메세지  
+             	
+				//elif 첫번재 감염자 /음수 입력시
+				printf("%d is first infector!!",PID);
+				break; 
+			}
+			
+			
+			
+            default: //메뉴번호 잘못 입력했을 때 
                 printf("[ERROR Wrong menu selection! (%i), please choose between 0 ~ 4\n", menu_selection);
                 break;
         } //switch문 여기까지. 

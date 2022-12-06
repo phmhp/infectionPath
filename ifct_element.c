@@ -1,3 +1,6 @@
+//최근  수정 날짜: 2022.12.07
+
+
 //  ifs_element.c 
 //  InfestPath
 //
@@ -169,11 +172,19 @@ unsigned int ifctele_getinfestedTime(void* obj)
 
 
  
-//5. 구조체 내용 출력. 
+//5. 구조체 내용 출력. =>1,2,3번 메뉴에서 사용됨. 
 void ifsele_printElement(void* obj) {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj; //구조체형식씌워서 가리키게 한다음에 출력. 
 	//print elements
-	pritnf("Age : %d", ptr->age );
+	pritnf("Patient index : %d\n", ptr->index );
+	pritnf("Patient age : %d\n", ptr->age );
+	pritnf("Detected time : %d\n", ptr->time );
+	pritnf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n",
+			 ifctele_getPlaceName(ptr->place[0]),ptr->place[0],
+			 ifctele_getPlaceName(ptr->place[1]),ptr->place[1],
+			 ifctele_getPlaceName(ptr->place[2]),ptr->place[2],
+			 ifctele_getPlaceName(ptr->place[3]),ptr->place[3],
+			 ifctele_getPlaceName(ptr->place[4]),ptr->place[4]			 ); //수정해야할수도... 
 	
 }
 
