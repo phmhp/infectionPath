@@ -115,7 +115,7 @@ typedef struct ifs_ele  {
 
  
  //3.구조체 내용 저장   //메모리를 동적으로 잡아서 main.c에게 전달해줄 것. 
- void* ifctele_genElement(int index, int age, unsigned int detected_time, int history_place[N_HISTORY])
+void* ifctele_genElement(int index, int age, unsigned int detected_time, int history_place[N_HISTORY])
  { 
  	ifs_ele_t* ptr; //구조체형 포인터. 
 	 
@@ -125,7 +125,7 @@ typedef struct ifs_ele  {
 	//ptr(구조체형 포인터)의 멤버 에 인수로 받은 값을 저장. 
 	ptr->index=index;   
 	ptr->age=age;
-	ptr->time detected_time; 
+	ptr->time= detected_time; 
 	ptr->place[0]=history_place[0] ;//배열 요소값 복사 => strcpy로? 아니면 배열[0]=배열[0] ? 
 	ptr->place[1]=history_place[1] ;
 	ptr->place[2]=history_place[2] ;
@@ -144,7 +144,7 @@ typedef struct ifs_ele  {
 //4.구조체 내용 분석  
 
 //4-1. 나이 
-int ifctele_getAge(void* obj) 
+int ifctele_getAge(void* obj)
 { 	
 	ifs_ele_t* ptr= (ifs_ele_t*)obj; //구조체로 인식할 수 있게 타입캐스팅하고 포인터로 가리킨 다음  
 	return ptr->age; //포인터로 구조쳋  안의 멤버를 반환해주면 됨.  
@@ -155,10 +155,10 @@ int ifctele_getAge(void* obj)
 
 
 //4-2. 감염 직전 이동경로. (배열) 
- int ifctele_getHistPlaceIndex(void* obj, int index)
+int ifctele_getHistPlaceIndex(void* obj, int index)
  {  
  	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
- 	return (strPtr->place_t place[index]);  //place_t 유무 확인해봐야함.  
+ 	return (strPtr-> place[index]);  //place_t 유무 확인해봐야함.  
  }
  
  
@@ -173,19 +173,19 @@ unsigned int ifctele_getinfestedTime(void* obj)
 
  
 //5. 구조체 내용 출력. =>1,2,3번 메뉴에서 사용됨. 
-void ifsele_printElement(void* obj) {
+void ifctele_printElement(void* obj) {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj; //구조체형식씌워서 가리키게 한다음에 출력. 
 	//print elements
 	printf("--------------------------------------------\n");
-	pritnf("Patient index : %d\n", ptr->index );
-	pritnf("Patient age : %d\n", ptr->age );
-	pritnf("Detected time : %d\n", ptr->time );
+	pritnf("Patient index : %d\n", strPtr->index );
+	pritnf("Patient age : %d\n", strPtr->age );
+	pritnf("Detected time : %d\n", strPtr->time );
 	pritnf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n",
-			 ifctele_getPlaceName(ptr->place[0]),ptr->place[0],
-			 ifctele_getPlaceName(ptr->place[1]),ptr->place[1],
-			 ifctele_getPlaceName(ptr->place[2]),ptr->place[2],
-			 ifctele_getPlaceName(ptr->place[3]),ptr->place[3],
-			 ifctele_getPlaceName(ptr->place[4]),ptr->place[4]			 ); //수정해야할수도... 
+			 ifctele_getPlaceName(strPtr->place[0]),strPtr->place[0],
+			 ifctele_getPlaceName(strPtr->place[1]),strPtr->place[1],
+			 ifctele_getPlaceName(strPtr->place[2]),strPtr->place[2],
+			 ifctele_getPlaceName(strPtr->place[3]),strPtr->place[3],
+			 ifctele_getPlaceName(strPtr->place[4]),strPtr->place[4]			 ); //수정해야할수도... 
 	printf("--------------------------------------------\n");
 }
 
