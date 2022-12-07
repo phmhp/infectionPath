@@ -191,7 +191,7 @@ int main(int argc, const char * argv[]) {
         	
 //감염 경로 및 최초 전파자 추적				 
 //지정된 환자를 시작으로 전파자와 감염당한 시점 및 장소를 순차적 출력하고 최초 전파자를 최종적으로 출력		 
-            case MENU_TRACK: //4  //infectee , transmitter, frtInfectee 정의하기! 
+            case MENU_TRACK: //4  
             {	int i;
 				printf("Patient index :");
 				scanf("%d",&pIndex); 
@@ -204,41 +204,9 @@ int main(int argc, const char * argv[]) {
 	반복문을 통해 현재 환자의 전자파를 반복적으로 찾음
 	더이상 전파자가 없으면 현재 환자를 최초 전파자로 간주*/
 	
-				void *infectee;
-				infectee = ifct_element;//현재환자 = 입력값;
-				
-				void *transmitter;
-				
-				void *frtInfectee;
-				
-				void *infectee__time;
-				void *infectee_place;
-				
-				
-				while (infectee!=NULL)//while (현재환자가 누군가 있음){
-				{
-					for (i=0;i<	(N_HISTORY-2);i++)
-											//{int trackInfester(int patient_no, int *detected_time, int *place)
-					    
-						infectee_time = ifctele_getinfestedTime(infectee);
-						infectee_place = ifctele_getHistPlaceIndex(infectee, i );
-						transmitter =trackInfester(ifctele_getpIndex(infectee) ,infectee__time ,infectee_place  );//전파자 = trackInfester(현재환자);
-						if (transmitter!=NULL) //if (전파자가 있으면)
-						{	 
-							printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
-														infectee,      transmitter,   isMet(infectee , transmitter ),convertTimeToIndex( ifctele_getinfestedTime(infectee) ,isMet(infectee , transmitter )));//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);
-						}  																											//isMet      //isMet으로 알아내기?  
-						
-						else //transmitter==NULL일 때 
-						{
-							frtInfectee= infectee;//최초전파자 = 현재환자; // 음수입력해도 같은 결과.			
-							printf("%d is first infector!!",pIndex);
-						}
-					}
-					infectee = transmitter; //현재환자 = 전파자; //while문을 반복하기위해(전파자를 계속 찾아서 거슬러올라가기위해서)  
-				} //while문 끝 
+			
                 break;    
-        	  
+        	}
         	
         	
         	
@@ -266,39 +234,7 @@ int trackInfester(int patient_no, int *detected_time, int *place)
 	만난 환자 중 가장 이른 시간에 만난 환자를 전파자로 간주
 */
 
-	int i;
-	
-	
-	void *infectee_ptr; //현재환자 
-	infectee_ptr=ifctdb_getData(patient_no);
-	
-	void *ith_ptr; //i번째 환자 
-	
-	void *transmitter; 
-	
-	for (i=0;i<pTotal;i++) //for (i번째 환자)
-	{	
-		
-		ith_ptr = ifctdb_getData(i);
-		
-		
-		//////////////////////////
-		int metTime; 
-		
-		
-		metTime = isMet( &infectee_ptr , &ith_ptr ); //& 붙이는 것 맞나? //만난시간 = isMet(현재환자, i번째 환자);
-		
-		if (metTime > 0) //if ( 만난시간> 0) //만났다면
-		{	
-			if (metTime<earliest_time)//if (지금까지 환자 중 만난시간이 가장 이른가?)
-			{
-				earliest_time=metTime; //??
-				
-				transmitter = ith_ptr;//전파자 = i;
-			}
-		}			
-	}			
-	return transmitter;//return 전파자;	
+
 }
 
 
@@ -308,7 +244,7 @@ int trackInfester(int patient_no, int *detected_time, int *place)
 
 
 
-int isMet(void *infectee_ptr , void *ith_ptr )
+int isMet( )
 {/* 
 	 15주차 슬라이드 p.17
 	isMet() : 두환자의 전파 시점 계산
@@ -316,31 +252,7 @@ int isMet(void *infectee_ptr , void *ith_ptr )
 	특정 시간 구간에 같은 장소에 있었는지 확인
 */
 
-	int i;
 	
-	int infecteeHistTime;
-	int ithHistTime;
-	int metTime;
-	
-	for (i=2;i<N_HISTORY;i++)
-	{	
-		//현재환자의 i번째 이동장소 시점 계산;
-		infecteeHistTime=(ifctele_getinfestedTime(infectee_ptr))-(i-4);
-		
-		//계산된 시점에서의 대상환자 이동장소 계산;
-		ithHistTime=convertTimeToIndex(infecteeHistTime,ifctele_getinfestedTime(ith_ptr)); 
-		
-		//if (i번째 이동장소 == 대상환자 이동장소)
-		if (ifctele_getHistPlaceIndex( infectee_ptr, i ) == ithHistTime)
-		{
-			metTime= infecteeHistTime ;//만난시간 = i번째 이동장소 시점;
-		}
-		else //안만났을 경우 
-		{
-			metTime =-1;
-		}
-	}
-	return metTime; //return 만난시간;		
 }
 
 
