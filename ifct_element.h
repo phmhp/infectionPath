@@ -1,6 +1,6 @@
 //최근  수정 날짜: 2022.12.07
  
-
+ 
 //  ifct_element.h
 //  infection path
 //

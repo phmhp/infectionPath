@@ -1,4 +1,6 @@
-//
+//최근  수정 날짜: 2022.12.07
+
+
 //  ifct_database.c
 //  Infection Path
 //  Database platform code for storing infest path elements

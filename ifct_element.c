@@ -176,6 +176,7 @@ unsigned int ifctele_getinfestedTime(void* obj)
 void ifsele_printElement(void* obj) {
 	ifs_ele_t *strPtr = (ifs_ele_t *)obj; //구조체형식씌워서 가리키게 한다음에 출력. 
 	//print elements
+	printf("--------------------------------------------\n");
 	pritnf("Patient index : %d\n", ptr->index );
 	pritnf("Patient age : %d\n", ptr->age );
 	pritnf("Detected time : %d\n", ptr->time );
@@ -185,7 +186,7 @@ void ifsele_printElement(void* obj) {
 			 ifctele_getPlaceName(ptr->place[2]),ptr->place[2],
 			 ifctele_getPlaceName(ptr->place[3]),ptr->place[3],
 			 ifctele_getPlaceName(ptr->place[4]),ptr->place[4]			 ); //수정해야할수도... 
-	
+	printf("--------------------------------------------\n");
 }
 
 
