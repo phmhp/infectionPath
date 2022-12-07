@@ -1,7 +1,7 @@
 //최근  수정 날짜: 2022.12.07
 
-
-//  ifs_element.c 
+//
+//  ifs_element.c
 //  InfestPath
 //
 //  Created by Juyeop Kim on 2020/10/20.
@@ -54,7 +54,7 @@ typedef enum place {
     Istanbul,       //37
     Dubai,          //38
     CapeTown        //39
-} place_t; //enum place p1; 대신 place_t p1; 
+} place_t;
 
 char countryName[N_PLACE+1][MAX_PLACENAME] =
 {   "Seoul",
@@ -100,96 +100,91 @@ char countryName[N_PLACE+1][MAX_PLACENAME] =
     "Unrecognized"
 };
 
-
-
 //1.구조체 정의 
-typedef struct ifs_ele  {
-	int index;//번호 -> 정수 
-	int age; //나이 -> 정수
-	int time; 	//감염 시점 -> 정수
-	place_t place[N_HISTORY];//감염 직전 이동경로 -> (enum) place_t 배열 
-	
-  //2. 구조체 instance 생성
-} ifs_ele_t; 
+typedef struct ifs_ele {
+	int index; //번호-> 정수 
+	int age; //나이 -> 정수 
+	int time; //감염시점 -> 정수 
+	place_t place[N_HISTORY]; //감염직전 이동경로 -> (enum) place_t 배열 
+}ifs_ele_t; //구조체 instance 생성 
 
 
- 
- //3.구조체 내용 저장   //메모리를 동적으로 잡아서 main.c에게 전달해줄 것. 
+//3.구조체 내용 저장 -메모리를 동적으로 잡은 후에 main.c로 전달. 
 void* ifctele_genElement(int index, int age, unsigned int detected_time, int history_place[N_HISTORY])
- { 
- 	ifs_ele_t* ptr; //구조체형 포인터. 
-	 
-	//지금 여기서는 구조체 하나만 만드는거라 malloc 구조체하나크기만큼 잡음. 
-	ptr=(ifs_ele_t*)malloc(sizeof(ifs_ele_t)); 	
+{
+	ifs_ele_t* ptr; //ifs_ele 구조체형 포인터 
 	
-	//ptr(구조체형 포인터)의 멤버 에 인수로 받은 값을 저장. 
-	ptr->index=index;   
+	ptr=(ifs_ele_t*)malloc(sizeof(ifs_ele_t)); //구조체 하나 만드는 만큼만 크기 지정하면 됨.
+	
+	//ptr(구조체형포인터)의 멤버로 전달받은 값을 저장.
+	ptr->index=index;
 	ptr->age=age;
-	ptr->time= detected_time; 
-	ptr->place[0]=history_place[0] ;//배열 요소값 복사 => strcpy로? 아니면 배열[0]=배열[0] ? 
-	ptr->place[1]=history_place[1] ;
-	ptr->place[2]=history_place[2] ;
-	ptr->place[3]=history_place[3] ;
-	ptr->place[4]=history_place[4] ;	  
+	ptr->time=detected_time;
+
+	ptr->place[0]=history_place[0]; 
+	ptr->place[1]=history_place[1];
+	ptr->place[2]=history_place[2];
+	ptr->place[3]=history_place[3];
+	ptr->place[4]=history_place[4];
 	
-	//여기에 바로 free하면 안됨 =>언젠가는 free를 해야한다는 뜻 (당장x) 
-	// 지금은 main.c에서 element.c로 구조체 만들 값들을 전달받은 후에 
-	//구조체만들고,  다시 main.c에게 줘야해서 여기서 free쓰면 안됨. 
 	
- 	return ptr; //구조체형 포인터인 ptr을 다시 main.c에게 전달. 
- 
-  }
-
-
-//4.구조체 내용 분석  
-
-//4-1. 나이 
-int ifctele_getAge(void* obj)
-{ 	
-	ifs_ele_t* ptr= (ifs_ele_t*)obj; //구조체로 인식할 수 있게 타입캐스팅하고 포인터로 가리킨 다음  
-	return ptr->age; //포인터로 구조쳋  안의 멤버를 반환해주면 됨.  
-
+	//여기서 (malloc) free x  
+	//다시 main.c에 전달해야하기때문.
+	 
+	return ptr; //구조체형포인터 ptr 다시 main.c에 전달 
 }
 
 
-
-
-//4-2. 감염 직전 이동경로. (배열) 
+//4-2. 감염직전 이동경로 (배열) 
 int ifctele_getHistPlaceIndex(void* obj, int index)
- {  
- 	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
- 	return (strPtr-> place[index]);  //place_t 유무 확인해봐야함.  
- }
- 
- 
- 
-//4-3.감염 시점. 
+{
+	ifs_ele_t* strPtr=(ifs_ele_t*)obj;
+	return (strPtr->place[index]); 
+}
+
+
 unsigned int ifctele_getinfestedTime(void* obj)
 {
-	ifs_ele_t *strPtr = (ifs_ele_t *)obj;
- 	return (strPtr->time);  
+	ifs_ele_t *ptr=(ifs_ele_t *)obj;
+	return (ptr->time);
 }
 
 
- 
-//5. 구조체 내용 출력. =>1,2,3번 메뉴에서 사용됨. 
-void ifctele_printElement(void* obj) {
-	ifs_ele_t *strPtr = (ifs_ele_t *)obj; //구조체형식씌워서 가리키게 한다음에 출력. 
+//4.구조체 내용 분석 
+//4-1. 나이 
+int ifctele_getAge(void* obj)
+{
+	ifs_ele_t* ptr =(ifs_ele_t*)obj; //구조체포인터로 void포인터 odj 가리킴 //구조체 인식하도록 구조체로 타입캐스팅. 
+	return ptr->age; //포인터로 구조체 멤버 반환  
+	
+}
+
+int ifctele_getpIndex(void* obj)
+{
+	ifs_ele_t* ptr =(ifs_ele_t*)obj; 
+	return ptr->index;  
+}
+
+//5.구조체 내용 출력 => 메뉴 1,2,3에서 사용 
+void ifctele_printElement(void* obj)
+{	
+	ifs_ele_t* ptr=(ifs_ele_t*)obj; 
 	//print elements
 	printf("--------------------------------------------\n");
-	pritnf("Patient index : %d\n", strPtr->index );
-	pritnf("Patient age : %d\n", strPtr->age );
-	pritnf("Detected time : %d\n", strPtr->time );
-	pritnf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n",
-			 ifctele_getPlaceName(strPtr->place[0]),strPtr->place[0],
-			 ifctele_getPlaceName(strPtr->place[1]),strPtr->place[1],
-			 ifctele_getPlaceName(strPtr->place[2]),strPtr->place[2],
-			 ifctele_getPlaceName(strPtr->place[3]),strPtr->place[3],
-			 ifctele_getPlaceName(strPtr->place[4]),strPtr->place[4]			 ); //수정해야할수도... 
-	printf("--------------------------------------------\n");
+	printf("Patient index : %d\n", ptr->index );
+	printf("Patient age : %d\n", ptr->age );
+	printf("Detected time : %d\n", ptr->time );
+	printf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n",
+			 ifctele_getPlaceName(ptr->place[0]),ptr->place[0],
+			 ifctele_getPlaceName(ptr->place[1]),ptr->place[1],
+			 ifctele_getPlaceName(ptr->place[2]),ptr->place[2],
+			 ifctele_getPlaceName(ptr->place[3]),ptr->place[3],
+			 ifctele_getPlaceName(ptr->place[4]),ptr->place[4]			 ); //수정해야할수도... 
+	printf("--------------------------------------------");
+	
 }
 
-
+//장소번호를 받고 장소이름(문자열)을 반환해주는 함수 
 char* ifctele_getPlaceName(int placeIndex) //장소이름과 번호 맵핑  
 {
 	return countryName[placeIndex];

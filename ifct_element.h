@@ -1,4 +1,4 @@
-//최근  수정 날짜: 2022.12.07
+//최근  수정 날짜: 2022.12.08
  
 //
 //  ifct_element.h
@@ -19,5 +19,6 @@ char* ifctele_getPlaceName(int placeIndex);
 int ifctele_getHistPlaceIndex(void* obj, int index);
 unsigned int ifctele_getinfestedTime(void* obj);
 int ifctele_getAge(void* obj);
+int ifctele_getpIndex(void* obj);
 void ifctele_printElement(void* obj);
 #endif /* ifct_element_h */
