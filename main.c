@@ -1,6 +1,4 @@
-//최근  수정 날짜: 2022.12.08
-
-// 
+//
 //  main.c
 //  infestPath
 //
@@ -21,7 +19,6 @@
 #define TIME_HIDE           2
 
 
-int earliest_time=100;
 int pTotal; //전체 환자 수  
 ///////////////////////
 
@@ -191,45 +188,56 @@ int main(int argc, const char * argv[]) {
         	
 //감염 경로 및 최초 전파자 추적				 
 //지정된 환자를 시작으로 전파자와 감염당한 시점 및 장소를 순차적 출력하고 최초 전파자를 최종적으로 출력		 
-            case MENU_TRACK: //4  
-            {	int i;
+            case MENU_TRACK: //4  //infectee , transmitter, frtInfectee 정의하기! 
+            {	
+			
+			
+				void *infectee; //현재 환자  
+				void *transmitter; //감염시킨사람 
+				void *frtInfectee; //맨 처음 감염자 
+				
+				int metTime; //감염시점 
+			    int metPlace; //감염 장소 
+				
+				int *detected_time ; //용도?? 
+				int *place  ; //용도?? 
+				
+				/////////////////////////////////
+				int i;
 				printf("Patient index :");
 				scanf("%d",&pIndex); 
 				//else patient index로 영문자/너무 큰 값 입력시 
 				//print 에러메세지  
-				ifct_element = ifctdb_getData(pIndex);
-//알고리즘 
-/* 15주차 슬라이드 p.15
-	순차적으로 전파자를 찾아감
-	반복문을 통해 현재 환자의 전자파를 반복적으로 찾음
-	더이상 전파자가 없으면 현재 환자를 최초 전파자로 간주*/
-////////////////////////////////////////////////////////////////////////////	
+				ifct_element = ifctdb_getData(pIndex); //입력된 pIndex 값 가져오기. 
+				infectee = (void *)ifct_element;//현재환자 = 입력값;
 				
-				//현재환자 = 입력값;
+				detected_time = ifctele_getinfestedTime(infectee);
 				
-				//while (현재환자가 누군가 있음)
-				
-				{
-					//전파자 = trackInfester(현재환자);
-			
-					//if (전파자가 있으면)
-			
-						//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);
-			
-				
-					//else
-						//최초전파자 = 현재환자;
-				
-				//현재환자 = 전파자;
-				
-				}
-/////////////////////////////////////////////////////////////////////////////	
-
+				for (i=2; i<N_HISTORY;i++){
+					place =  ifctele_getHistPlaceIndex(infectee, i);
+					while (infectee!=NULL)//while (현재환자가 누군가 있음){
+					{		
+							transmitter = trackInfester(pIndex,detected_time , place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
+							// printf("%d", ifctele_getAge(transmitter));
+							if (transmitter!=NULL) //if (전파자가 있으면)
+							{	/*아래 두줄 추가*/ 
+								metTime= isMet (infectee, transmitter);//만난 시간 , trackInfester에서 받아오기.  
+								metPlace= convertTimeToIndex(metTime); //만난 장소  
+								printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
+									                    	infectee, transmitter, metTime ,metPlace);//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);
+							}  																										
+							else //transmitter==NULL일 때 = 전파자가 없는 경우. 
+							{
+								frtInfectee= infectee;//최초전파자 = 현재환자; // 음수입력해도 같은 결과.			
+								printf("%d is first infector!!",frtInfectee);
+								infectee=NULL; //while문 반복을 그만하기 위해서 
+							}
+						//pIndex = ifctele_getpIndex(infectee); //pIndex(입력값)을 바꿔줘서 다음 while문 돌을 때 trackInfester 함수에 전달 . 
+						infectee = transmitter; //현재환자 = 전파자; //while문을 반복하기위해(전파자를 계속 찾아서 거슬러올라가기위해서)  
+						 
+				}	}//체크포인트  
+			} //while문 끝 
                 break;    
-        	}
-        	
-        	
-        	
         	
             default:
                 printf("[ERROR Wrong menu selection! (%i), please choose between 0 ~ 4\n", menu_selection);
@@ -245,41 +253,30 @@ int main(int argc, const char * argv[]) {
 
 
 ///////////////////////////           추가한 함수           ////////////////////////////////////////////////
-
-
-
-
-
-
-
-int trackInfester(int patient_no, int *detected_time, int *place)
-{ /*
-	 15주차 슬라이드 p.16
-	trackInfester() : 각 환자에 대해 감염가능 시점에 있었는지여부 확인
-	isMet() : 두 환자가 만난 시간을 산출하는 함수
-	안만났으면 -1 반환
-	만난 환자 중 가장 이른 시간에 만난 환자를 전파자로 간주
-*/
-////////////////////////////////////////////////////////////////////////////
-	//for (i번째 환자)
+int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에 이렇게 돼있음. 
+{ 	int i;
+	void *infectee_ptr; //현재환자 
+	void *ith_ptr; //i번째 환자 
+	void *transmitter; //전파자  
+	int current_metTime=0;
+	int metTime_record=1000; //큰 값으로 설정해놓고, 이른 시점(작은 숫자)로 점점 바뀌어가는 구조.  
 	
-	{
-		//만난시간 = isMet(현재환자, i번째 환자);
-	
-		//if ( 만난시간> 0) //만났다면
-	
-		{
-			//if (지금까지 환자 중 만난시간이 가장 이른가?)
-	
+	infectee_ptr=ifctdb_getData(patient_no); //현재환자의 정보 가져오기. 포인터로 가져오면 다시 정보 안가져와도 되나? 
+	for (i=0;i<pTotal;i++) //for (i번째 환자) => 환자 n명 중 환자 인덱스 0번부터 n-1번까지 
+	{	ith_ptr = ifctdb_getData(i); // i번째 환자의 정보 가져오기.  
+		
+		current_metTime = isMet( infectee_ptr , ith_ptr ); //i번째 환자로 for문 다시 돌 때마다 값 변함. //& 붙이는 것 맞나? //만난시간 = isMet(현재환자, i번째 환자);
+		if (current_metTime > 0) //if ( 만난시간> 0) //만났다면
+		{	
+			if ( current_metTime < metTime_record )//if (지금까지 환자 중 만난시간이 가장 이른가?) = 만난 시점의 숫자가 더 작은가? 
 			{
-				//전파자 = i;
-	
+				metTime_record = current_metTime ; //가장 이른 시점으로 바꿔줌.  
+				
+				transmitter = (void *)ith_ptr;//전파자 = i;
 			}
-		}
-	}
-	//return 전파자;
-	
-////////////////////////////////////////////////////////////////////////////
+		}			
+	}			
+	return transmitter;//return 전파자;	
 }
 
 
@@ -289,31 +286,43 @@ int trackInfester(int patient_no, int *detected_time, int *place)
 
 
 
-int isMet( )
-{/* 
-	 15주차 슬라이드 p.17
-	isMet() : 두환자의 전파 시점 계산
-	감염 시간을 기반으로 머무른 장소 별 시점 계산
-	특정 시간 구간에 같은 장소에 있었는지 확인
-*/
-//////////////////////////////////////////////////////////////////////////////
+int isMet(void *infectee_ptr , void *suspect_ptr) //현재환자,i번째 환자 받는거라고 수도코드에 나와있음.  
+{	
+	void * infectee;
+	infectee=(void *)infectee_ptr;
+
+	void * suspect;
+	suspect=(void *)suspect_ptr;
+	printf("%d",ifctele_getinfestedTime(infectee));
+	int i,j;
 	
-	//for (i=2;i<N_HISTORY;i++)
-	{
+	unsigned int infecteePlaceHist;//현재환자의 i번째 이동장소 시점 계산 
+	int metTime_isMet;
+	//int infecteeHistTime;
+	//int ithHistTime;
+	//int metTime;
+	
+	for (i=2;i<N_HISTORY;i++)
+	{	
 		//현재환자의 i번째 이동장소 시점 계산;
-	
+		int temp = i-4;
+		infecteePlaceHist = ifctele_getinfestedTime(infectee)- temp;
+		
 		//계산된 시점에서의 대상환자 이동장소 계산;
-	
-		//if (i번째 이동장소 == 대상환자 이동장소)
-		{
-			//만난시간 = i번째 이동장소 시점;
-	
+		for (j=0; j<=1; j++){
+			if (infecteePlaceHist ==( ifctele_getinfestedTime(suspect)-j)) {
+				if (   (ifctele_getHistPlaceIndex(infectee,i)) == (ifctele_getHistPlaceIndex(suspect,j))){
+					metTime_isMet = infecteePlaceHist;
+				}
+			}
+			else //안만났을 경우 
+			{
+			metTime_isMet =-1;
+			}	
 		}
+	
 	}
-	//return 만난시간;
-		
-		
-//////////////////////////////////////////////////////////////////////////////
+	return metTime_isMet; //return 만난시간;		
 }
 
 
