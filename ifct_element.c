@@ -105,7 +105,7 @@ typedef struct ifs_ele {
 	int index; //번호-> 정수 
 	int age; //나이 -> 정수 
 	int time; //감염시점 -> 정수 
-	place_t place[N_HISTORY]; //감염직전 이동경로 -> (enum) place_t 배열 
+	place_t placeHist[N_HISTORY]; //감염직전 이동경로 -> (enum) place_t 배열 
 }ifs_ele_t; //구조체 instance 생성 
 
 
@@ -121,11 +121,11 @@ void* ifctele_genElement(int index, int age, unsigned int detected_time, int his
 	ptr->age=age;
 	ptr->time=detected_time;
 
-	ptr->place[0]=history_place[0]; 
-	ptr->place[1]=history_place[1];
-	ptr->place[2]=history_place[2];
-	ptr->place[3]=history_place[3];
-	ptr->place[4]=history_place[4];
+	ptr->placeHist[0]=history_place[0]; 
+	ptr->placeHist[1]=history_place[1];
+	ptr->placeHist[2]=history_place[2];
+	ptr->placeHist[3]=history_place[3];
+	ptr->placeHist[4]=history_place[4];
 	
 	
 	//여기서 (malloc) free x  
@@ -135,11 +135,14 @@ void* ifctele_genElement(int index, int age, unsigned int detected_time, int his
 }
 
 
-//4-2. 감염직전 이동경로 (배열) 
+
+//4-2. 감염직전 이동경로 (배열)   //이제 더 이상 건들지말기!!!!!!!! 
 int ifctele_getHistPlaceIndex(void* obj, int index)
-{
-	ifs_ele_t* strPtr=(ifs_ele_t*)obj;
-	return (strPtr->place[index]); 
+{	int i; 
+	int indexNum;
+	indexNum = index;
+	ifs_ele_t *ptr=(ifs_ele_t*)obj;
+	return ptr->placeHist[indexNum];
 }
 
 
@@ -175,11 +178,11 @@ void ifctele_printElement(void* obj)
 	printf("Patient age : %d\n", ptr->age );
 	printf("Detected time : %d\n", ptr->time );
 	printf("Path History : %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)-> %s(%d)\n",
-			 ifctele_getPlaceName(ptr->place[0]),ptr->place[0],
-			 ifctele_getPlaceName(ptr->place[1]),ptr->place[1],
-			 ifctele_getPlaceName(ptr->place[2]),ptr->place[2],
-			 ifctele_getPlaceName(ptr->place[3]),ptr->place[3],
-			 ifctele_getPlaceName(ptr->place[4]),ptr->place[4]			 ); //수정해야할수도... 
+			 ifctele_getPlaceName(ptr->placeHist[0]),ptr->placeHist[0],
+			 ifctele_getPlaceName(ptr->placeHist[1]),ptr->placeHist[1],
+			 ifctele_getPlaceName(ptr->placeHist[2]),ptr->placeHist[2],
+			 ifctele_getPlaceName(ptr->placeHist[3]),ptr->placeHist[3],
+			 ifctele_getPlaceName(ptr->placeHist[4]),ptr->placeHist[4]			 ); //수정해야할수도... 
 	printf("--------------------------------------------");
 	
 }
