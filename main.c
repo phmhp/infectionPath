@@ -193,10 +193,14 @@ int main(int argc, const char * argv[]) {
             case MENU_TRACK: //4  //infectee , transmitter, frtInfectee 정의하기! 
             {	int i;
 				void *infectee;
-            	int *detected_time;
-            	int infecteeDT; //Detected Time
+				void *transmitter;
+            	void *frtInfectee;
+				int *detected_time;
             	int *detected_place;
+            	int infecteeDT; //Detected Time
             	int infecteeDP; //Detected Place
+            	int metTime, metPlace;
+            	
             	
 				printf("Patient index : "); 
             	scanf("%d",&pIndex);
@@ -207,15 +211,36 @@ int main(int argc, const char * argv[]) {
             	
             	infecteeDT = ifctele_getinfestedTime(infectee) ;
             	detected_time = &infecteeDT;
-            	printf("detected time = %d\n", *detected_time );
+            	//printf("detected time = %d\n", *detected_time );
 				
 				for (i=2; i<N_HISTORY;i++){
 			
 				infecteeDP = ifctele_getHistPlaceIndex(infectee, i );
-				//detected_place = &infecteeDP;
-				printf("%d번째detected place number = %d\n", i, infecteeDP);
-				//printf("%d\n", detected_place);
-					//while 
+				detected_place = &infecteeDP;
+				
+				//printf("%d번째detected place number = %d\n", i, infecteeDP);
+				while (infectee!=NULL){ //현재환자가 누군가 있음.  
+					transmitter = trackInfester(pIndex,detected_time, detected_place);
+					
+					if (transmitter !=NULL){ 
+						//printf("here") ;
+						metTime=isMet(infectee,transmitter);
+						metPlace=infecteeDP ; //아닌가? 
+						printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
+									                    	ifctele_getpIndex(infectee), ifctele_getpIndex(transmitter), 
+															metTime ,ifctele_getPlaceName(metPlace));//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);	
+						infectee= transmitter;
+						
+						pIndex = ifctele_getpIndex(infectee); //새로운 '현재환자'인덱스로 바꾸기  
+					}
+					else 
+					{
+						frtInfectee=infectee;
+						printf("%d is first infector!!",ifctele_getpIndex(frtInfectee));
+						infectee=NULL;
+					}
+				}	 
+				
 				}
 				
 				
@@ -238,20 +263,36 @@ int main(int argc, const char * argv[]) {
 
 ///////////////////////////           추가한 함수           ////////////////////////////////////////////////
 int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에 이렇게 돼있음. 
-{ 
-}
+{ 	int i;
+	void * infectee_track;
+	void * ith_track; 
+	void * transmitter;
+	int current_metTime = 0;
+	int metTime_record;
 
-
-
-
-
-
-
-
-int isMet() //현재환자,i번째 환자 받는거라고 수도코드에 나와있음.  
-{	
-
+	infectee_track = ifctdb_getData(patient_no); 
+	for (i=0;i<pTotal;i++)
+	{	ith_track = ifctdb_getData(i);
 		
+		current_metTime = isMet (infectee_track, ith_track);
+		if (current_metTime > 0)
+		{
+			if (current_metTime <metTime_record)
+			{
+				metTime_record = current_metTime;
+				transmitter = (void *)ith_track;
+			}
+		}
+		else if  (current_metTime == -1)
+		{transmitter = NULL; //맞나? 
+		 } 
+	}
+	return transmitter;
+
+
+
+
+
 }
 
 
@@ -260,8 +301,75 @@ int isMet() //현재환자,i번째 환자 받는거라고 수도코드에 나와있음.
 
 
 
-int convertTimeToIndex( ) 
-{	
+
+int isMet( void *infectee_ptr, void * suspect_ptr) //현재환자,i번째 환자 받는거라고 수도코드에 나와있음.  
+{	void * infectee;
+	infectee = (void *)infectee_ptr;
+	
+	void * suspect;
+	suspect = (void*)suspect_ptr;
+	
+	int i,j;
+	
+	unsigned int infectee_ithPlace; 
+	int suspect_ithPlace;
+	int metTime_isMet;
+	
+	for (i=2;i<N_HISTORY;i++)
+	{	//현재 환자의 i번째 이동장소 시점 계산 
+		//=> 환자 감염일 - 인덱스 -4 
+		//=> ifctele_getinfestedTime(infectee) - i -4 
+		infectee_ithPlace = ((int)ifctele_getinfestedTime(infectee))-i-4;
+		
+		//계산된 시점에서의 대상환자 이동장소 계산 
+		//=> convertTimeToIndex 함수 이용?
+		
+		
+		/*suspect_ithPlace = convertTimeToIndex(infectee_ithPlace, ifctele_getInfestedTime(suspect)) 
+		suspect_index =convertTo_ith (infectee_ithPlace, ifctele_getInfestedTime(suspect))
+		//문자열 비교함수로 if infectee_ithPlace== ifctele_getHistPlaceIndex(suspect,suspect_index ) 
+		*/
+		for (j=0;j<=1;j++){
+			if (infectee_ithPlace ==(ifctele_getinfestedTime(suspect)-j)){
+				if ( ifctele_getHistPlaceIndex(infectee, i ) == ifctele_getHistPlaceIndex(suspect, j)){
+						metTime_isMet = infectee_ithPlace; //정확한 날짜 (ex-13일 ,27일  
+				}
+			}
+			else
+			{
+				metTime_isMet = -1;
+			}
+		}
+	}
+	return metTime_isMet;		
+}
+
+
+
+
+
+
+
+int convertTimeToIndex( int time, int infestedTime) 
+{	int index =-1;
+	
+	if (time <= infestedTime && time <infestedTime-N_HISTORY)
+	{
+		index = N_HISTORY-(infestedTime-time)-1;
+	}
+	return index;
+}
+
+
+int convertTo_ith( int time, int infestedTime) 
+{	int index =-1;
+	int placeIndex;
+	if (time <= infestedTime && time <infestedTime-N_HISTORY)
+	{
+		index = N_HISTORY-(infestedTime-time)-1-4;
+		placeIndex =  -(index);
+		}	
+	return placeIndex;
 }
 
 
