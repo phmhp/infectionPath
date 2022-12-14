@@ -109,9 +109,11 @@ int main(int argc, const char * argv[]) {
 			 	int *detected_time;
 			 	int infecteeDP; //Detected Place
 			 	int *detected_place;
-			 	
-			 	
-			 	
+			 	int transmitterpIndex;
+			 	int metTime, metPlace ; 
+			 	void *transmitter;
+			 	int metPlaceIndex;
+
 			 	//변수 선언 영역 (end) 
 			 
 			 	printf("Patient index : "); 
@@ -119,28 +121,46 @@ int main(int argc, const char * argv[]) {
 			 	
 			 	ifct_element = ifctdb_getData(pIndex);
 			 	infectee = (void *)ifct_element;
-			 	while (infectee != NULL ) { //while문이 무한반복하지않도록.. 
+			 	if (infectee != NULL ) { //while문이 무한반복하지않도록.. 
 			 		
 			 		infecteeDT = ifctele_getinfestedTime(infectee) ;
             		detected_time = &infecteeDT;
 			 		infecteeDP = ifctele_getHistPlaceIndex(infectee, i );
 					detected_place = &infecteeDP;
-			 		int transmitterpIndex;
 			 		
-					 
-					 
-	
 			 		transmitterpIndex = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
-									 }
-			 	
-			 	
-			 	
-			 break;   
-			}
+					printf("transmitterpIndex =%d \n",transmitterpIndex);
+					if (transmitterpIndex >= 0) //전파자 있으면 
+					{
+						transmitter = ifctdb_getData(transmitterpIndex);
+						printf("테스트_ transmitter 나이 = %d\n",  ifctele_getAge(transmitter) );
+						metTime =isMet(infectee,transmitter);
+						metPlaceIndex=metTime - ifctele_getinfestedTime(infectee)+4; //순서 인덱스를 말하는 거고 
+						metPlace = ifctele_getHistPlaceIndex(infectee,metPlaceIndex);//장소 숫자 인덱스를 말하는 것
+						
+						printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
+								                    	ifctele_getpIndex(infectee), transmitterpIndex, metTime ,ifctele_getPlaceName(metPlaceIndex));//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);	
+					}
+					} 
 				
-       } //switch문 끝  	
+				
+				
+				
+				
+					
+						
+					
+					
+				}
+			 	break;   
+			default:
+                printf("[ERROR Wrong menu selection! (%i), please choose between 0 ~ 4\n", menu_selection);
+                break;
+		} //switch문 끝  
+		
+       }	while(menu_selection != 0); //do-while문 끝  
     
-    } while(menu_selection != 0); //do-while문 끝  
+
     
     
     return 0;
