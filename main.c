@@ -25,7 +25,10 @@ int pTotal; //전체 환자 수
 
 
 int trackInfester(int patient_no, int *detected_time, int *place);
-//int isMet();
+int isMet( void *infectee_ptr, void * suspect_ptr);
+int convertTo_ith( int time, int infestedTime) ;
+int convertTimeToIndex( int time, int infestedTime) ;
+
 
 int main(int argc, const char * argv[]) {
     
@@ -201,7 +204,9 @@ int main(int argc, const char * argv[]) {
             	int infecteeDT; //Detected Time
             	int infecteeDP; //Detected Place
             	int metTime, metPlace;
-        
+            	int track_store;
+        		
+        		int * trackInfesterStore;
             	
             	
 				printf("Patient index : "); 
@@ -221,9 +226,9 @@ int main(int argc, const char * argv[]) {
 					
 					infecteeDP = ifctele_getHistPlaceIndex(infectee, i );
 					detected_place = &infecteeDP;
-					transmitter = trackInfester(pIndex,detected_time, detected_place);
-				 //포인터로? 
-					if (transmitter !=NULL){ //전파자 있는 경우 
+					transmitter = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
+
+					if (transmitter != NULL){ //전파자 있는 경우 
 						printf("here") ; //출력안됨  
 						metTime=isMet(infectee,transmitter);
 						metPlace=infecteeDP ; //아닌가? 
@@ -269,7 +274,7 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 	void * transmitter;
 	int current_metTime = 0;
 	int metTime_record=1000;
-	int passing_number;
+
 	infectee_track = ifctdb_getData(patient_no); 
 	
 	
@@ -285,20 +290,19 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 			{
 				metTime_record = current_metTime;
 				transmitter = (void *)ith_track;
-				passing_number = ifctele_getpIndex(transmitter);
+		
 			
 			}
 		}
 	}
 	if (current_metTime == -1){
 		transmitter = NULL;
-		passing_number = -1;
 		
 		
 	}
 	printf("track 결과물 : \n");
 	//ifctele_printElement(transmitter); //transmitter에 값이 안들어가는 것을 알 수 있음. 
-	return passing_number;
+	return  transmitter;
 
 
 
