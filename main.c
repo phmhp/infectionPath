@@ -115,6 +115,8 @@ int main(int argc, const char * argv[])
 			 	void *transmitter;
 			 	int metPlaceIndex;
 				void *frtInfectee;
+				int metHistIndex;
+				
 			 	//변수 선언 영역 (end) 
 			 
 			 	printf("Patient index : "); 
@@ -140,8 +142,14 @@ int main(int argc, const char * argv[])
 						transmitter = ifctdb_getData(transmitterpIndex);
 						printf("테스트_ transmitter 나이 = %d\n",  ifctele_getAge(transmitter) );
 						metTime =isMet(infectee,transmitter);
-						metPlaceIndex=metTime - ifctele_getinfestedTime(infectee)+4; //순서 인덱스를 말하는 거고 
-						metPlace = ifctele_getHistPlaceIndex(infectee,metPlaceIndex);//장소 숫자 인덱스를 말하는 것
+						metHistIndex =  metTime-infecteeDT+4;//순서 인덱스를 말하는 거고
+						printf("metHistIndex = %d",metHistIndex );
+						
+						metPlaceIndex= ifctele_getHistPlaceIndex(infectee,metHistIndex);  //장소 인덱스를 말하는 것  
+						printf("metPlaceIndex = %d\n", metPlaceIndex); 
+					
+						
+						metPlace = //장소 숫자 인덱스를 말하는 것
 						
 						printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
 								                    	ifctele_getpIndex(infectee), transmitterpIndex, metTime ,ifctele_getPlaceName(metPlaceIndex));//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);		
