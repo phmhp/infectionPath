@@ -129,21 +129,9 @@ int main(int argc, const char * argv[]) {
 			 		
 					 
 					 
-					 
-					///다시 삭제해야할 부분(isMet함수 테스트 목적) 
-					 ///////////////
-			 		void *temp ; 
-			 		int ttime;
-					temp =  ifctdb_getData(2);
-			 		ttime=isMet(infectee,temp);
-			 		printf("main 함수의 ttime= %d\n" , ttime);
-			 		////////////
-			 		
-			 		
-			 		
-			 		
-			 		//transmitterpIndex = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
-					//printf("transmitterpIndex = %d", transmitterpIndex);
+	
+			 		transmitterpIndex = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
+					printf("main _  transmitterpIndex = %d", transmitterpIndex);
 				 }
 			 	
 			 	
@@ -165,13 +153,16 @@ int main(int argc, const char * argv[]) {
 
 
 //
-/*
+
 int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에 이렇게 돼있음. 
 {	//변수 선언 영역 
 	int i; 
 	void * infectee_track;
 	void * ith_track; 
+	
 	int current_metTime = -1;
+	int metTime_record =1000;
+	int passing_pIndex = -1;
 	 
 	//변수 선언 영역 
 	//int pIndex = patient_no; //추가 및 변경 (patient_no =>pIndex 
@@ -185,14 +176,27 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 	{	
 		ith_track = ifctdb_getData(i);
 		//printf("track count : %d \n",i);
-		printf("here\n");
-		//current_metTime = isMet (infectee_track, ith_track); //현재환자랑 i번째 환자랑 만난 시점 (현재 돌고있는 for문으로 바로 찾아낸 결과
-		 
+		printf("\n\n\n\n trackInfester_ here : (try %d th)\n", i);
+		current_metTime = isMet (infectee_track, ith_track); //현재환자랑 i번째 환자랑 만난 시점 (현재 돌고있는 for문으로 바로 찾아낸 결과
+		printf("trackInfester_ current_metTime = %d \n", current_metTime);
+		if (current_metTime > 0 )
+		{	printf("trackInfester_ test for- current_metTime > 0 / current time : %d \n",current_metTime); 
+			if (current_metTime < metTime_record) 
+			{
+			metTime_record = current_metTime;
+			passing_pIndex = ifctele_getpIndex(ith_track);
+			printf("trackInfester_passing_pIndex = %d\n", passing_pIndex);
+			}
+			
+		}
+	printf("trackInfester -----%d번째 환자와 만난 시점 = %d : -----지금까지 가장 이른 시점 : %d\n",i, current_metTime,metTime_record);
+
 	}
- 	
+	
+ 	return passing_pIndex;
 }
 
-*/
+
 
 
 
@@ -205,6 +209,7 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 int isMet( void *infectee_ptr, void * suspect_ptr) //현재환자,i번째 환자 받는거라고 수도코드에 나와있음.  
 {	//변수 선언 영역 
 	int i; 
+	int k;
 	void * infectee;
 	infectee = (void *)infectee_ptr;
 	void * suspect;
@@ -214,6 +219,10 @@ int isMet( void *infectee_ptr, void * suspect_ptr) //현재환자,i번째 환자 받는거�
 	int infectee_ithPlace; 
 	int suspect_infestedTime;	
 	
+	int ithTime;
+	int kthTime;
+	
+	int suspect_kthPlace; 
 	int metTime_isMet =-1;
 	
 	//변수 선언 영역 
@@ -223,42 +232,40 @@ int isMet( void *infectee_ptr, void * suspect_ptr) //현재환자,i번째 환자 받는거�
 		//현재 환자의 i번째 이동장소 시점 계산
 		//=> 환자 감염일 +인덱스 -4
 		//=>   ifctele_getinfestedTime(infectee) + i -4 
-		printf("--------------------------------------------------------------------------------------------------";) 
-		infectee_ithPlaceTime = (ifctele_getinfestedTime(infectee))+i-4;
-		printf("1_ 현재환자의 i번째 이동장소 시점 계산  = infectee_ithPlaceTime = %d \n", infectee_ithPlaceTime);//제대로 됨 	
 		
+		//infectee_ithPlaceTime = (ifctele_getinfestedTime(infectee))+i-4;
+		//printf("1_ 현재환자의 i번째 이동장소 시점 계산  = infectee_ithPlaceTime = %d \n", infectee_ithPlaceTime);//제대로 됨 	
 		
-		//계산된 시점에서의 대상환자 이동장소 계산
-		suspect_infestedTime = ifctele_getinfestedTime(suspect);
-		printf("2_ 계산된 시점에서의 대상환자 이동 장소 계산(변수 준비) = suspect_infestedTime = %d \n", suspect_infestedTime);//제대로 됨  
-		
-		//계산된 시점에서의 대상환자 이동장소 계산 
-		suspect_ithPlace = convertTimeToIndex( infectee_ithPlaceTime, suspect_infestedTime );
-		printf("3_ 계산된 시점에서의 대상환자 이동장소 계산  = suspect_ithPlace = %d \n", suspect_ithPlace);  //error
-		
-		
-		//현재 환자의 i번째 이동 장소 (if문을 위해 필요한 변수 정의)
+	
+		//현재 환자가 i번째에 있던 장소  
 		infectee_ithPlace = ifctele_getHistPlaceIndex(infectee, i );
-		printf("4_ 현재 환자의 i번째 이동장소 계산 infectee_ithPlace = %d \n ",infectee_ithPlace); //제대로 됨  
-		
-		
-		
-		
-		//if 현재 환자의 i번째 이동장소 ==대상환자읭 해당시점 이동장소 라면 
-		//장소 인덱스 번호로 비교  
-		if (infectee_ithPlace  == suspect_ithPlace )
-		{	
-			
-			//만난 시간 = i번째 이동장소 시점 ; 
-			metTime_isMet = infectee_ithPlaceTime;
-			printf("만난 시간 = metTime_isMet = %d \n", metTime_isMet); 
+		for (k= 3; k<N_HISTORY;k++) {
+		//대상환자가 k번째에 있던 장소  
+			suspect_kthPlace = ifctele_getHistPlaceIndex(suspect, k );
+			if ( infectee_ithPlace == suspect_kthPlace )	{
+				//같은 장소에 있던 것이 맞다면
+				
+				//날짜 비교 
+				//현재환자 날짜 변수 = 최종감염일함수(현재환자)+i-4;
+				ithTime=ifctele_getinfestedTime(infectee)+i-4;
+				
+				//해당환자 날짜 변수 = 최종감염일함수(해당환자)+k-4;
+				kthTime=ifctele_getinfestedTime(suspect)+k-4;
+				
+				//if (현재환자 날짜 변수 == 해당환자 날짜 변수)
+				if (ithTime ==kthTime)
+				{
+					//만난시간 = 현재환자 날짜 변수 ; //(어차피 현재환자날짜변수 ==해당환자날짜변수이긴 함 뭘 넣어도 상관없음 ) 
+				 	metTime_isMet = ithTime ; 
+				 	printf("isMet_만난 경우에 metTime  : %d\n",metTime_isMet);
+				 	return metTime_isMet;
+				 } 
+			}
 		}
-	}
-	
-	
-	
-	return metTime_isMet;
-} 
+	}	 
+printf("isMet_못만난 경우에 metTime : %d\n",metTime_isMet);
+return metTime_isMet;
+}
 
 
 
