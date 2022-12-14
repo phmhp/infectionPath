@@ -108,15 +108,31 @@ int main(int argc, const char * argv[])
  //특정 환자에 대한 정보 출력  		
 //지정된 환자(번호 입력)에 대한 정보 출력은 번호, 나이, 감염 확인일자, 그리고 최근 5개 이동장소를 출력           
 			case MENU_PATIENT: //1  //완성! 
-            {	void * meme;//ifct element
+            {	
+            		
 				printf("Patient index : ");
 				scanf("%d", &pIndex); 
-				if (pIndex >= 0 && pIndex < pTotal) //if (pIndex 정상범위의 숫자이면)
+				
+				//입력값 예외처리 (start)
+				if (pIndex >= pTotal) //환자 전체 수보다 더 큰 환자인덱스 번호를 입력했을 때 에러메시지 출력   
+				{	printf("[ERROR] Your input for the patient index (%d) is wrong! input must be 0 ~ 4\n",pIndex);
+				
+					break;
+				}
+				else if (pIndex < 0)
+				{	ifctdb_getData(pIndex);
+					printf("There is no element of index %d.\n",pIndex);
+					break;
+
+				 } 
+				//입력값 예외처리 (end)  
+				
+				else if (pIndex >= 0 && pIndex < pTotal) //if (pIndex 정상범위의 숫자이면)
 				 
 				ifct_element = ifctdb_getData(pIndex); //pIndex번째 환자정보구조체를 linked list에서 꺼내고, void포인터구조체를 ifct_element 포인터변수에 반환.
 				ifctele_printElement(ifct_element);//pIndex번째 환자정보 출력 
-				meme = (void *)ifct_element;
-				printf("%d",ifctele_getAge(meme));
+
+
 				//else (pIndex 범위벗어남/영문자/숫자...) 
 				//print 에러메시지     
                 break;
@@ -172,7 +188,17 @@ int main(int argc, const char * argv[])
                 scanf("%d",&minAge);
                 printf("maximal age : ");
                 scanf("%d", &maxAge); 
-            
+                
+                
+                //입력값 예외처리  (start) 
+            	if (minAge < 0 || maxAge <0 ||minAge >maxAge) //환자 전체 수보다 더 큰 환자인덱스 번호를 입력했거나 0보다 작은 환자인덱스를 입력했을 때 에러메시지 출력   
+				{	printf("[ERROR] input age (%d , %d) is wrong!\n",minAge,maxAge);
+					
+					break;
+				}
+				//입력값 예외처리(end) 
+				
+					
 				//정상적으로 작동하는 경우
 				for(i=0;i<pTotal;i++)
 				{
@@ -212,6 +238,11 @@ int main(int argc, const char * argv[])
 			 
 			 	printf("Patient index : "); 
             	scanf("%d",&pIndex);
+            	if (pIndex >= pTotal) //환자 전체 수보다 더 큰 환자인덱스 번호를 입력했을 때 에러메시지 출력   
+				{	printf("[ERROR] Your input for the patient index (%d) is wrong! input must be 0 ~ 4\n", pIndex);
+					break;
+				}
+					
 			 	firstpIndex = pIndex; 
 			 	
 			 	ifct_element = ifctdb_getData(pIndex);
