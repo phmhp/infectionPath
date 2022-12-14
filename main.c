@@ -204,7 +204,7 @@ int main(int argc, const char * argv[]) {
             	int infecteeDT; //Detected Time
             	int infecteeDP; //Detected Place
             	int metTime, metPlace;
-            	int track_store;
+            	int transmitterpIndex;
         		
         		int * trackInfesterStore;
             	
@@ -226,23 +226,17 @@ int main(int argc, const char * argv[]) {
 					
 					infecteeDP = ifctele_getHistPlaceIndex(infectee, i );
 					detected_place = &infecteeDP;
-					transmitter = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
-
-					if (transmitter != NULL){ //전파자 있는 경우 
-						printf("here") ; //출력안됨  
-						metTime=isMet(infectee,transmitter);
-						metPlace=infecteeDP ; //아닌가? 
-						printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
-									                    	ifctele_getpIndex(infectee), ifctele_getpIndex(transmitter), 
-															metTime ,ifctele_getPlaceName(metPlace));//printf(“%i 환자는 %i 환자에게 전파됨\n”, 현재환자, 전파자);	
-						infectee = transmitter;
-						pIndex = ifctele_getpIndex(infectee); //새로운 '현재환자'인덱스로 바꾸기  
-					}	}
-					//else
-					if (transmitter == NULL ){
-						frtInfectee=infectee;
-						printf("%d is first infector!!",ifctele_getpIndex(frtInfectee));
-						infectee=NULL;
+					transmitterpIndex = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
+					if (transmitterpIndex > 0) //전파자 있는 경우  
+					{
+					transmitter = ifctdb_getData(transmitterpIndex);
+					printf("transmitter : %d" ,ifctele_getAge(transmitter));
+					}
+					else if (transmitterpIndex < 0)
+					{
+						
+						
+					 } 
 					}
 				 	
 				
@@ -274,7 +268,9 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 	void * transmitter;
 	int current_metTime = 0;
 	int metTime_record=1000;
-
+	int passing_pIndex;
+	
+	
 	infectee_track = ifctdb_getData(patient_no); 
 	
 	
@@ -290,7 +286,8 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 			{
 				metTime_record = current_metTime;
 				transmitter = (void *)ith_track;
-		
+				passing_pIndex = ifctele_getpIndex(transmitter);
+				
 			
 			}
 		}
@@ -301,8 +298,13 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 		
 	}
 	printf("track 결과물 : \n");
+	if (transmitter ==NULL)
+	{
+		return -1;
+	}
 	//ifctele_printElement(transmitter); //transmitter에 값이 안들어가는 것을 알 수 있음. 
-	return  transmitter;
+	
+	return  passing_pIndex;
 
 
 
