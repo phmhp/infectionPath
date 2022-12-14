@@ -183,7 +183,7 @@ void ifctele_printElement(void* obj)
 			 ifctele_getPlaceName(ptr->placeHist[2]),ptr->placeHist[2],
 			 ifctele_getPlaceName(ptr->placeHist[3]),ptr->placeHist[3],
 			 ifctele_getPlaceName(ptr->placeHist[4]),ptr->placeHist[4]			 ); //수정해야할수도... 
-	printf("--------------------------------------------");
+	printf("--------------------------------------------\n");
 	
 }
 

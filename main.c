@@ -101,7 +101,96 @@ int main(int argc, const char * argv[])
         
         //포인터를 함수이용해서 넘겨주면 함수에서는 구조체 멤버 접근 후 값을 반환해줌.  
         switch(menu_selection)
-        {	
+        {	 case MENU_EXIT: //0
+                printf("Exiting the program... Bye bye.\n");
+                break;
+                
+ //특정 환자에 대한 정보 출력  		
+//지정된 환자(번호 입력)에 대한 정보 출력은 번호, 나이, 감염 확인일자, 그리고 최근 5개 이동장소를 출력           
+			case MENU_PATIENT: //1  //완성! 
+            {	void * meme;//ifct element
+				printf("Patient index : ");
+				scanf("%d", &pIndex); 
+				if (pIndex >= 0 && pIndex < pTotal) //if (pIndex 정상범위의 숫자이면)
+				 
+				ifct_element = ifctdb_getData(pIndex); //pIndex번째 환자정보구조체를 linked list에서 꺼내고, void포인터구조체를 ifct_element 포인터변수에 반환.
+				ifctele_printElement(ifct_element);//pIndex번째 환자정보 출력 
+				meme = (void *)ifct_element;
+				printf("%d",ifctele_getAge(meme));
+				//else (pIndex 범위벗어남/영문자/숫자...) 
+				//print 에러메시지     
+                break;
+        	}
+        	
+//특정 장소에서 (최종)감염이 확인된 환자 관련 정보 출력
+//지정된 장소(문자열 형태로 입력)에서 발병 확인이 된 환자 모두의 정보 출력
+            case MENU_PLACE: //2 //완성!!
+            {	cnt=0;
+				int i;
+				printf("Place Name : ");
+				scanf("%s",&placeName); //문자열 입력받기
+				
+				//입력받으면... 
+				//출력 값 여러 명일 경우..=>for loop
+				for (i=0;i<pTotal;i++)
+				{
+					ifct_element = ifctdb_getData(i);//pIndex번째 환자정보구조체를 linked list로부터 꺼내서 ifct_element포인터변수에 반환
+					
+					//문자열로 만들기
+					HPlace = ifctele_getHistPlaceIndex (ifct_element,4);//최종감염된 장소번호 알려주는 함수를 통해 HPlace에 값 장소번호저장 
+					strcpy(HPlaceName, (ifctele_getPlaceName(HPlace)));
+					
+					//printf("%d\n",HPlace); //test 
+					//printf("%s\n",HPlaceName);//test
+					
+					
+					//char* ifctele_getPlaceName(int placeIndex) 
+					//int ifctele_getHistPlaceIndex(void* obj, int index)
+					
+					
+					if (strcmp(placeName,ifctele_getPlaceName(ifctele_getHistPlaceIndex(ifct_element, 4)))==0) //입력받은 장소가 누군가의 마지막 이동경로와 같은 경우
+					{
+						ifctele_printElement(ifct_element);
+						cnt++; //해당장소에서 감염된 사람 숫자 카운트 +1  
+						
+					}
+					//else
+					//다시 찾아보기  
+				}  
+				//오타/숫자/감염자없는 도시의 경우도 출력함. 
+				printf("There are %d patients detected in %s.\n",cnt, placeName);
+                break;
+        	} 
+        	
+//특정 범위의 나이에 해당하는 환자 관련 정보 출력
+//특정 범위 나이는 최소 및 최대 값을 입력 받으며, 최소값 이상이면서 최대값 이하 나이의 환자 모두의 정보 출력
+            case MENU_AGE: //3   //완성!!! 
+            {	int i;
+			 	
+			 	
+				printf("minimal age : ");
+                scanf("%d",&minAge);
+                printf("maximal age : ");
+                scanf("%d", &maxAge); 
+            
+				//정상적으로 작동하는 경우
+				for(i=0;i<pTotal;i++)
+				{
+					ifct_element = ifctdb_getData(i); //pIndex번째 환자정보구조체를 linked list로부터 꺼내옴.   
+					if ( ifctele_getAge(ifct_element) >= minAge   &&   ifctele_getAge(ifct_element) <=  maxAge) 
+					{
+						ifctele_printElement(ifct_element); 
+						cnt++;
+					}
+					
+				//해당 결과값이 없는 경우 (minAge==maxAge일 때, 입력값 둘 다 0일때=>구조체출력은 안되지만 아래문장은 출력됨.
+				
+				}    
+				printf("There are %d patients whose age is between %d and %d.\n", cnt, minAge, maxAge);
+				//else =>입력값의 범위가 이상할 때 (음수이거나 최소값이 최대값보다 클 때) 
+                //print 에러메시지  
+                break;
+        	} 
 			case MENU_TRACK: //4
 			 {	//변수 선언 영역(start)
 			 	int i;
@@ -110,17 +199,20 @@ int main(int argc, const char * argv[])
 			 	int *detected_time;
 			 	int infecteeDP; //Detected Place
 			 	int *detected_place;
-			 	int transmitterpIndex;
+			 	int transmitterpIndex =-1;
 			 	int metTime, metPlace ; 
 			 	void *transmitter;
 			 	int metPlaceIndex;
 				void *frtInfectee;
 				int metHistIndex;
 				
+				int firstpIndex;
+				int lastpIndex = -1;
 			 	//변수 선언 영역 (end) 
 			 
 			 	printf("Patient index : "); 
             	scanf("%d",&pIndex);
+			 	firstpIndex = pIndex; 
 			 	
 			 	ifct_element = ifctdb_getData(pIndex);
 				infectee = (void *)ifct_element;
@@ -151,18 +243,32 @@ int main(int argc, const char * argv[])
 						
 						pIndex = ifctele_getpIndex(transmitter);
 						infectee = (void *)transmitter ; 
+						lastpIndex = pIndex;
 					}	
-					else
-					{	
-						frtInfectee= infectee;
-						printf("%s is first infector!!", ifctele_getpIndex(frtInfectee));
-						pIndex =-1; 
-						infectee = NULL;
-						  		
+					else if (transmitterpIndex < 0){
+						if (lastpIndex < 0) 
+						{			
+							frtInfectee = (void *)infectee;
+							printf("%d is the first infector!!\n", ifctele_getpIndex(frtInfectee));
+							pIndex =-1; 
+							infectee = NULL;
+							
+						} 
+						else if (lastpIndex >=0)
+						{
+							pIndex =-1; 
+							infectee = NULL;
+							
+							printf("The first infector of %d is %d\n" , firstpIndex,lastpIndex);
+						}
 					} 
+					
 			//the first tracker is ~...	
 			}//while 문  끝  
-
+			
+					
+					
+						//
 			
 			
 			
