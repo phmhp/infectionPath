@@ -119,7 +119,7 @@ int main(int argc, const char * argv[]) {
 			 	
 			 	ifct_element = ifctdb_getData(pIndex);
 			 	infectee = (void *)ifct_element;
-			 	if (infectee != NULL ) { //while문이 무한반복하지않도록.. 
+			 	while (infectee != NULL ) { //while문이 무한반복하지않도록.. 
 			 		
 			 		infecteeDT = ifctele_getinfestedTime(infectee) ;
             		detected_time = &infecteeDT;
@@ -131,8 +131,7 @@ int main(int argc, const char * argv[]) {
 					 
 	
 			 		transmitterpIndex = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
-					printf("main _  transmitterpIndex = %d", transmitterpIndex);
-				 }
+									 }
 			 	
 			 	
 			 	
@@ -176,21 +175,16 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 	{	
 		ith_track = ifctdb_getData(i);
 		//printf("track count : %d \n",i);
-		printf("\n\n\n\n trackInfester_ here : (try %d th)\n", i);
-		current_metTime = isMet (infectee_track, ith_track); //현재환자랑 i번째 환자랑 만난 시점 (현재 돌고있는 for문으로 바로 찾아낸 결과
-		printf("trackInfester_ current_metTime = %d \n", current_metTime);
-		if (current_metTime > 0 )
-		{	printf("trackInfester_ test for- current_metTime > 0 / current time : %d \n",current_metTime); 
-			if (current_metTime < metTime_record) 
+			current_metTime = isMet (infectee_track, ith_track); //현재환자랑 i번째 환자랑 만난 시점 (현재 돌고있는 for문으로 바로 찾아낸 결과
+				if (current_metTime > 0 )
+		{		if (current_metTime < metTime_record) 
 			{
 			metTime_record = current_metTime;
 			passing_pIndex = ifctele_getpIndex(ith_track);
-			printf("trackInfester_passing_pIndex = %d\n", passing_pIndex);
-			}
+						}
 			
 		}
-	printf("trackInfester -----%d번째 환자와 만난 시점 = %d : -----지금까지 가장 이른 시점 : %d\n",i, current_metTime,metTime_record);
-
+	
 	}
 	
  	return passing_pIndex;
@@ -257,13 +251,13 @@ int isMet( void *infectee_ptr, void * suspect_ptr) //현재환자,i번째 환자 받는거�
 				{
 					//만난시간 = 현재환자 날짜 변수 ; //(어차피 현재환자날짜변수 ==해당환자날짜변수이긴 함 뭘 넣어도 상관없음 ) 
 				 	metTime_isMet = ithTime ; 
-				 	printf("isMet_만난 경우에 metTime  : %d\n",metTime_isMet);
+				 	
 				 	return metTime_isMet;
 				 } 
 			}
 		}
 	}	 
-printf("isMet_못만난 경우에 metTime : %d\n",metTime_isMet);
+
 return metTime_isMet;
 }
 
