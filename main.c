@@ -133,21 +133,16 @@ int main(int argc, const char * argv[])
             		detected_time = &infecteeDT;
 			 		infecteeDP = ifctele_getHistPlaceIndex(infectee, i );
 					detected_place = &infecteeDP;
-			 		printf("stop point");
 			 		transmitterpIndex = trackInfester(pIndex,detected_time ,detected_place);			//{int trackInfester(int patient_no, int *detected_time, int *place)
-					printf("transmitterpIndex =%d \n",transmitterpIndex);
 					
 					if (transmitterpIndex >= 0) //전파자 있으면 
 					{	
 						transmitter = ifctdb_getData(transmitterpIndex);
-						printf("테스트_ transmitter 나이 = %d\n",  ifctele_getAge(transmitter) );
 						metTime =isMet(infectee,transmitter);
 						metHistIndex =  metTime-infecteeDT+4;//순서 인덱스를 말하는 거고
-						printf("metHistIndex = %d",metHistIndex );
 						
 						metPlaceIndex= ifctele_getHistPlaceIndex(infectee,metHistIndex);  //장소 인덱스를 말하는 것  
-						printf("metPlaceIndex = %d\n", metPlaceIndex); 
-					
+
 						
 						metPlace = //장소 숫자 인덱스를 말하는 것
 						
@@ -158,13 +153,14 @@ int main(int argc, const char * argv[])
 						infectee = (void *)transmitter ; 
 					}	
 					else
-					{
+					{	
 						frtInfectee= infectee;
 						printf("%s is first infector!!", ifctele_getpIndex(frtInfectee));
 						pIndex =-1; 
 						infectee = NULL;
 						  		
-					} 	
+					} 
+			//the first tracker is ~...	
 			}//while 문  끝  
 
 			
@@ -211,7 +207,6 @@ int trackInfester(int patient_no,int *detected_time , int *place) //프로토타입에
 	for (i=0;i<pTotal;i++) //환자 전체 인원만큼 반복 	
 	{	
 		ith_track = ifctdb_getData(i);
-		printf("track count : %d \n",i);
 			current_metTime = isMet (infectee_track, ith_track); //현재환자랑 i번째 환자랑 만난 시점 (현재 돌고있는 for문으로 바로 찾아낸 결과
 			if (current_metTime > 0 )
 			{	if (current_metTime < metTime_record) 
