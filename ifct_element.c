@@ -1,7 +1,5 @@
-//최근  수정 날짜: 2022.12.15
-
 //
-//  ifs_element.c 
+//  ifs_element.c
 //  InfestPath
 //
 //  Created by Juyeop Kim on 2020/10/20.
@@ -192,4 +190,8 @@ char* ifctele_getPlaceName(int placeIndex) //장소이름과 번호 맵핑
 {
 	return countryName[placeIndex];
 }
+///////////////////
+
+
+
 

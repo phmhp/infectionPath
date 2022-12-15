@@ -1,5 +1,3 @@
-//최근  수정 날짜: 2022.12.15
-  
 //
 //  ifct_element.h
 //  infection path
@@ -19,6 +17,8 @@ char* ifctele_getPlaceName(int placeIndex);
 int ifctele_getHistPlaceIndex(void* obj, int index);
 unsigned int ifctele_getinfestedTime(void* obj);
 int ifctele_getAge(void* obj);
-int ifctele_getpIndex(void* obj);
 void ifctele_printElement(void* obj);
+int ifctele_getpIndex(void* obj);
+
+
 #endif /* ifct_element_h */

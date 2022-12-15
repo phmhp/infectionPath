@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
+
 #include "ifct_element.h"
 #include "ifct_database.h"
 
@@ -18,11 +19,8 @@
 
 #define TIME_HIDE           2
 
-
-int pTotal; //전체 환자 수=> 다른 함수( trackInfester() )에서 쓰기 위해서 전역변수로 선언  
-
-
-
+//전역변수 선언  
+int pTotal; //전체 환자 수=> 다른 함수( trackInfester() )에서도 사용해서 전역변수로 선언  
 
 int trackInfester(int patient_no, int *detected_time, int *place); // trackInfester() 선언  
 int isMet( void *infectee_ptr, void * suspect_ptr); //isMet() 선언 
@@ -78,6 +76,7 @@ int main(int argc, const char * argv[])
         return -1;
     }
     
+    
     //1-2. loading each patient informations
     //while문을 한번 돌 때 환자정보를 구조체로 만들어서 linked list로 넣는 동작을 함.
 	while (3==fscanf(fp,"%d %d %d", &pIndex,&age,&time)) 
@@ -90,9 +89,8 @@ int main(int argc, const char * argv[])
 		ifct_element = ifctele_genElement(pIndex,age,time,placeHist);//element.c파일로 보내서 구조체만들음.
 	
 		ifctdb_addTail(ifct_element); //database.c로 구조체 보냄.(linked list에 추가) //ifct_element는 구조체를 가지고 있는 상태. 
-		pTotal++; //전체 환자 수 카운트  		 
+		pTotal++; //전체 환자 수 카운트  	
 	}
-	
 	
     //1-3. FILE pointer close
     fclose(fp);
@@ -134,7 +132,7 @@ int main(int argc, const char * argv[])
 					break;
 				}
 				else if (pIndex < 0) //음수 입력 시 
-				{	ifctdb_getData(pIndex);
+				{	//ifctdb_getData(pIndex);
 					printf("There is no element of index %d.\n",pIndex);
 					break;
 				} 
@@ -268,6 +266,16 @@ int main(int argc, const char * argv[])
 		        break;
 		}//switch문 끝  
 	}	while(menu_selection != 0);  //do-while문 끝 
+	
+	//for (i=0;i<ifctdb_len;i++){
+		infectee =  ifctdb_getData(0);
+		printf("infectee_deleteData work? : %d\n",ifctele_getAge(infectee))	;
+		ifctdb_deleteData(0);
+		printf("infectee_deleteData work? : %d\n",ifctele_getAge(infectee))	;	
+	//}
+
+
+
    	return 0;	
 }//main함수 끝  
 
