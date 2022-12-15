@@ -209,7 +209,7 @@ int main(int argc, const char * argv[])
 			 	printf("Patient index : "); 
             	scanf("%d",&pIndex);
             	if (pIndex >= pTotal) //환자인덱스번호로 범위 초과하는 값 입력했을 경우   
-				{	printf("[ERROR] Your input for the patient index (%d) is wrong! input must be 0 ~ 4\n", pIndex);
+				{	printf("[ERROR] Your input for the patient index (%d) is wrong! input must be 0 ~ %d\n", pIndex,pTotal-1);
 					break;
 				}
 			 	firstpIndex = pIndex; //마지막에 출력할 때 사용하기 위해 첫번째 입력값 저장  
@@ -267,12 +267,20 @@ int main(int argc, const char * argv[])
 		}//switch문 끝  
 	}	while(menu_selection != 0);  //do-while문 끝 
 	
-	//for (i=0;i<ifctdb_len;i++){
-		infectee =  ifctdb_getData(0);
-		printf("infectee_deleteData work? : %d\n",ifctele_getAge(infectee))	;
-		ifctdb_deleteData(0);
-		printf("infectee_deleteData work? : %d\n",ifctele_getAge(infectee))	;	
-	//}
+	
+	
+	
+	
+	
+	
+	
+
+	}
+
+
+
+
+
 
 
 
