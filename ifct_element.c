@@ -2,7 +2,7 @@
 //  ifs_element.c
 //  InfestPath
 //
-//  Created by Juyeop Kim on 2020/10/20.
+//  Created by Juyeop Kim on 2020/10/20.   
 //
 
 #include <stdio.h>

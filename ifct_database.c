@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+   
 #include "ifct_database.h"
 
 #define LIST_END -1
