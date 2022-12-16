@@ -1,4 +1,4 @@
-//
+//최근 수정 날짜 : 2022.12.16 
 //  main.c
 //  infestPath
 //
@@ -78,7 +78,7 @@ int main(int argc, const char * argv[]) {
         printf("0. Exit.\n");                                               //MENU_EXIT
         printf("=============== ------------------------------------------------------- =============\n\n");
         
-        printf("Select a menu :");
+        printf("Select a menu :");     
         scanf("%d", &menu_selection);
         fflush(stdin);
         

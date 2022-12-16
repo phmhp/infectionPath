@@ -1,4 +1,4 @@
-//
+// 수정 금지  
 //  ifct_database.h
 //  infection Path
 //
