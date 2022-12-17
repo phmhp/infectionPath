@@ -1,4 +1,4 @@
-// 수정 금지  
+// 수정 금지   
 //  ifct_database.c
 //  Infection Path
 //  Database platform code for storing infest path elements
