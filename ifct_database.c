@@ -1,4 +1,4 @@
-// 수정 금지   
+//
 //  ifct_database.c
 //  Infection Path
 //  Database platform code for storing infest path elements
@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-   
+
 #include "ifct_database.h"
 
 #define LIST_END -1
