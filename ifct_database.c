@@ -23,7 +23,7 @@ typedef struct node{
 
 static node_t* list_database = NULL;
 static node_t* listPtr = NULL;
-static int list_cnt = 0;
+static int list_resultCount = 0;
 
 
 //Inner functions (cannot used at the outside of this file)
@@ -55,9 +55,9 @@ static node_t* ifctList(int index)
         printf("[ERROR] ifctList() : either list is null or index is wrong! (offset : %i)\n", index);
         return NULL;
     }
-    if (index >= list_cnt)
+    if (index >= list_resultCount)
     {
-        printf("[ERROR] ifctList() : index is larger than length (len:%i, index:%i)\n", list_cnt, index);
+        printf("[ERROR] ifctList() : index is larger than length (len:%i, index:%i)\n", list_resultCount, index);
         return NULL;
     }
     
@@ -128,7 +128,7 @@ int ifctdb_addTail(void* obj)
     }
     else
     {
-        ndPtr = ifctList(list_cnt-1);
+        ndPtr = ifctList(list_resultCount-1);
         ndPtr->next = newNdPtr;
         newNdPtr->prev = ndPtr;
         newNdPtr->index = ndPtr->index+1;
@@ -136,7 +136,7 @@ int ifctdb_addTail(void* obj)
     
     listPtr = newNdPtr;
     
-    list_cnt++;
+    list_resultCount++;
     
     return 0;
 }
@@ -174,9 +174,9 @@ int ifctdb_deleteData(int index)
     free(delNdPtr->obj);
     free(delNdPtr);
     
-    list_cnt--;
+    list_resultCount--;
     
-    if (list_cnt == 0)
+    if (list_resultCount == 0)
     {
         list_database = NULL;
     }
@@ -197,7 +197,7 @@ int ifctdb_deleteData(int index)
 */
 int ifctdb_len(void)
 {
-    return list_cnt;
+    return list_resultCount;
 }
 
 
