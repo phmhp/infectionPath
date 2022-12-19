@@ -109,8 +109,7 @@ typedef struct ifs_ele {
 
 //3.구조체 내용 저장 -메모리를 동적으로 잡은 후에 main.c로 전달. 
 void* ifctele_genElement(int index, int age, unsigned int detected_time, int history_place[N_HISTORY])
-{
-	ifs_ele_t* ptr; //ifs_ele 구조체형 포인터 
+{	ifs_ele_t* ptr; //ifs_ele 구조체형 포인터 
 	
 	ptr=(ifs_ele_t*)malloc(sizeof(ifs_ele_t)); //구조체 하나 만드는 만큼만 크기 지정하면 됨.
 	
@@ -134,7 +133,7 @@ void* ifctele_genElement(int index, int age, unsigned int detected_time, int his
 
 
 
-//4-2. 감염직전 이동경로 (배열)   //이제 더 이상 건들지말기!!!!!!!! 
+//4-2. 감염직전 이동경로를 반환해주는 함수 (배열)   
 int ifctele_getHistPlaceIndex(void* obj, int index)
 {	int i; 
 	int indexNum;
@@ -143,33 +142,33 @@ int ifctele_getHistPlaceIndex(void* obj, int index)
 	return ptr->placeHist[indexNum];
 }
 
-
+//최종 감염 시점(ex-28일)을 반환해주는 함수  
 unsigned int ifctele_getinfestedTime(void* obj)
-{
-	ifs_ele_t *ptr=(ifs_ele_t *)obj;
+{	ifs_ele_t *ptr=(ifs_ele_t *)obj;
 	return (ptr->time);
 }
 
 
 //4.구조체 내용 분석 
-//4-1. 나이 
+//4-1. 나이를 반환해주는 함수  
 int ifctele_getAge(void* obj)
-{
-	ifs_ele_t* ptr =(ifs_ele_t*)obj; //구조체포인터로 void포인터 odj 가리킴 //구조체 인식하도록 구조체로 타입캐스팅. 
+{	ifs_ele_t* ptr =(ifs_ele_t*)obj; //구조체포인터로 void포인터 odj 가리킴 //구조체 인식하도록 구조체로 타입캐스팅. 
 	return ptr->age; //포인터로 구조체 멤버 반환  
-	
 }
 
+
+
+//환자번호를 반환해주는 함수  
 int ifctele_getpIndex(void* obj)
-{
-	ifs_ele_t* ptr =(ifs_ele_t*)obj; 
+{	ifs_ele_t* ptr =(ifs_ele_t*)obj; 
 	return ptr->index;  
 }
 
-//5.구조체 내용 출력 => 메뉴 1,2,3에서 사용 
+
+
+//5.구조체 내용(환자 정보) 출력 => 메뉴 1,2,3에서 사용 
 void ifctele_printElement(void* obj)
-{	
-	ifs_ele_t* ptr=(ifs_ele_t*)obj; 
+{	ifs_ele_t* ptr=(ifs_ele_t*)obj; 
 	//print elements
 	printf("--------------------------------------------\n");
 	printf("Patient index : %d\n", ptr->index );
@@ -180,17 +179,18 @@ void ifctele_printElement(void* obj)
 			 ifctele_getPlaceName(ptr->placeHist[1]),ptr->placeHist[1],
 			 ifctele_getPlaceName(ptr->placeHist[2]),ptr->placeHist[2],
 			 ifctele_getPlaceName(ptr->placeHist[3]),ptr->placeHist[3],
-			 ifctele_getPlaceName(ptr->placeHist[4]),ptr->placeHist[4]			 ); //수정해야할수도... 
-	printf("--------------------------------------------\n");
-	
+			 ifctele_getPlaceName(ptr->placeHist[4]),ptr->placeHist[4]    ); 
+	printf("--------------------------------------------\n");	
 }
+
+
+
+
 
 //장소번호를 받고 장소이름(문자열)을 반환해주는 함수 
 char* ifctele_getPlaceName(int placeIndex) //장소이름과 번호 맵핑  
-{
-	return countryName[placeIndex];
+{	return countryName[placeIndex];
 }
-///////////////////
 
 
 

@@ -60,6 +60,7 @@ int main(int argc, const char * argv[])
 	int lastPIndex = -1; // 가장 빨리 감염된 전파자의 환자 인덱스 ( 초기값 음수로 설정해서 입력값부터 첫 전파자를 입력받은건지 , 반복추척해서 마지막결과(=첫 전파자)를 찾은건지 구분) 
 	int loopCount=0; //전파자 찾기 loop을 반복한 횟수  
     
+    
     //------------- 1. loading patient info file ------------------------------
     //1-1. FILE pointer open
     if (argc != 2)
@@ -79,17 +80,16 @@ int main(int argc, const char * argv[])
     //1-2. loading each patient informations
     //while문을 한번 돌 때 환자정보를 구조체로 만들어서 linked list로 넣는 동작을 함.
 	while (3==fscanf(fp,"%d %d %d", &pIndex,&age,&time)) 
-	{
-		
+	{	
 		for (i=0;i<N_HISTORY;i++)//for loop으로 정보읽어들이고 ifctele_genElement함수로 전달. 
 		{
 			fscanf(fp,"%d",&placeHist[i]); //fscanf로 받아온 정보 모아서 감염정보구조체에 집어넣음. 
 		}
 		ifct_element = ifctele_genElement(pIndex,age,time,placeHist);//element.c파일로 보내서 구조체만들음.
-	
 		ifctdb_addTail(ifct_element); //database.c로 구조체 보냄.(linked list에 추가) //ifct_element는 구조체를 가지고 있는 상태. 
 		pTotal++; //전체 환자 수 카운트  	
 	}
+	
 	
     //1-3. FILE pointer close
     fclose(fp);
@@ -120,8 +120,7 @@ int main(int argc, const char * argv[])
         	
 			//------------- MENU 1  --------------           
 			case MENU_PATIENT:   
-            {	
-            		
+            {			
 				printf("Patient index : ");
 				scanf("%d", &pIndex); 
 				
@@ -150,16 +149,13 @@ int main(int argc, const char * argv[])
 			//------------- MENU 2  --------------
             case MENU_PLACE: 
             {	resultCount=0; //값 초기화  
-				
 				printf("Place Name : ");
 				scanf("%s",&placeName); //도시명(문자열) 입력받기
 				for (i=0;i<pTotal;i++) //해당 도시에서 감염된 사람 찾기위해서 환자 전체 수만큼 반복  
 				{
 					ifct_element = ifctdb_getData(i); //i번째 환자 정보 포인터에 담기  
- 
 					finalPlaceNum = ifctele_getHistPlaceIndex (ifct_element,4);//i번째 환자의 감염장소( [4] ) 번호 저장  
 					strcpy(finalPlaceName, (ifctele_getPlaceName(finalPlaceNum))); //이후에 입력받은 장소 문자열(placeName)와 비교하기 위해서 문자열로 저장  
-			
 					if (strcmp(placeName,finalPlaceName)==0) //입력받은 장소 문자열과 i번째 환자의 감염장소 ( [4] )가 같다면  
 					{
 						ifctele_printElement(ifct_element);
@@ -204,7 +200,7 @@ int main(int argc, const char * argv[])
         	
         	//------------- MENU 4  --------------
 			case MENU_TRACK:
-			 {	 
+			{	 
 			 	printf("Patient index : "); 
             	scanf("%d",&pIndex);
             	if (pIndex >= pTotal) //환자인덱스번호로 범위 초과하는 값 입력했을 경우   
@@ -213,12 +209,11 @@ int main(int argc, const char * argv[])
 				}
 			 	firstPIndex = pIndex; //마지막에 출력할 때 사용하기 위해 첫번째 입력값 저장  
 			 	
-			 	//환자정보 가져오기  
+				 //환자정보 가져오기  
 			 	ifct_element = ifctdb_getData(pIndex);
 				infectee = (void *)ifct_element;
-			 	
 				
-				 while ( pIndex >=0 ) //현재 환자가 있는 동안에만 반복  
+				while ( pIndex >=0 ) //현재 환자가 있는 동안에만 반복  
 				{	spreaderPIndex= -1;
 			 		infectee= ifctdb_getData(pIndex); //반복하면서 현재환자가 바뀌었을 수도 있으니 다시 환자정보 가져옴  
 			 		
@@ -256,8 +251,8 @@ int main(int argc, const char * argv[])
 						{
 							pIndex =-1; //whle문을 나가기 위해서 -1 대입 
 							printf("The first infector of %d is %d\n" , firstPIndex ,lastPIndex);
-						}//else if문 끝(254번째 줄) 
-					}//else-if문 끝(247번째 줄) 
+						}//else if 문(2)  끝
+					}//else-if문(1)  끝
 				}//while 문  끝  
 				break; 
        		}//case MENU_TRACK: 끝  
@@ -322,9 +317,9 @@ int isMet( void *infectee_ptr, void * suspect_ptr)
 	int k;
 	void * infectee; //현재환자  
 	infectee = (void *)infectee_ptr;
+	
 	void * suspect; //대상환자  
 	suspect = (void*)suspect_ptr;
-	
 	
 	int infectee_ithPlace; //현재환자의 i번째 장소 
 	int infectee_ithTime; //현재환자의 i번째 장소 당시 시점
@@ -333,10 +328,6 @@ int isMet( void *infectee_ptr, void * suspect_ptr)
 	int suspect_kthTime; //대상환자의 k번째 장소 당시 시점  
 	
 	int metTime_isMet =-1; //안만났을 경우를 대비해서 초기값을 -1으로 설정  
-	
-	//int suspect_infestedTime; //대상환자의 감염시점 =>필요없는 둣  
-	//int suspect_ithPlace; //대상환자의 i번째 장소  => 필요없는 듯(i번째 장소 아니고 k번째 장소에 대한 정보가 필요) 
-	//int infectee_ithPlaceTime; //현재환자의 i번째 장소 시점 => 필요없는 듯( 다른 변수랑 겹침) 
 	//변수 선언 영역 
 	
 	 
@@ -352,8 +343,6 @@ int isMet( void *infectee_ptr, void * suspect_ptr)
 				infectee_ithTime=ifctele_getinfestedTime(infectee)+i-4;
 				//대상환자 k번째 장소에 있던 시점 = 최종감염일함수(대상환자)+k-4;
 				suspect_kthTime=ifctele_getinfestedTime(suspect)+k-4;
-				
-				
 				if (infectee_ithTime ==suspect_kthTime)//시점도 같다면 (현재환자 i번째 장소 시점 == 대상환자 k번째 시점) 
 				{
 				 	metTime_isMet = infectee_ithTime ; //만난 시간==ithTime ==kthTime (초기값인 -1에서 현재환자 i번째 장소시점(=대상환자 k시점과 같음)으로 변경 

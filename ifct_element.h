@@ -18,7 +18,7 @@ int ifctele_getHistPlaceIndex(void* obj, int index);
 unsigned int ifctele_getinfestedTime(void* obj);
 int ifctele_getAge(void* obj);
 void ifctele_printElement(void* obj);
-int ifctele_getpIndex(void* obj);
+int ifctele_getpIndex(void* obj); //추가한 함수  
 
 
 #endif /* ifct_element_h */
