@@ -47,7 +47,7 @@ static node_t* ifctList(int index)
     if (listPtr != NULL && listPtr->index <= index)
     {
         ndPtr = listPtr;
-    }
+    } 
     
     //return for wrong input
     if (index <-1)

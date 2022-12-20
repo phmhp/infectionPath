@@ -57,8 +57,9 @@ int main(int argc, const char * argv[])
 	int metPlaceNum; //만난 장소 도시 번호 
 	int metTimeIndex; //만난 시점이 몇번째 [인덱스]인지 저장  
 	int firstPIndex; //입력값으로 받은 첫 현재환자  
-	int lastPIndex = -1; // 가장 빨리 감염된 전파자의 환자 인덱스 ( 초기값 음수로 설정해서 입력값부터 첫 전파자를 입력받은건지 , 반복추척해서 마지막결과(=첫 전파자)를 찾은건지 구분) 
-	int loopCount=0; //전파자 찾기 loop을 반복한 횟수  
+	int lastPIndex = -1; // 가장 빨리 감염된 전파자의 환자 인덱스 
+	int loopCount=0; //전파자 찾기 loop을 반복한 횟수 
+	//(반복횟수를 통해서 입력받은 환자번호가 아예 첫 감염자인지 / 입력받은 환자번호의 전파자를 거슬러올라가서 추적한 결과 가장 먼저 감염된 전파자인지 구분)  
     
     
     //------------- 1. loading patient info file ------------------------------
@@ -68,7 +69,6 @@ int main(int argc, const char * argv[])
         printf("[ERROR] syntax : infestPath (file path).");
         return -1;
     }
-    
     fp = fopen(argv[1],"r"); //실행할 때  
     if (fp == NULL)
     {
@@ -116,7 +116,7 @@ int main(int argc, const char * argv[])
             {
 				printf("Exiting the program... Bye bye.\n");
                 break;
-        	}
+        	}// case MENU_EXIT: 끝  
         	
 			//------------- MENU 1  --------------           
 			case MENU_PATIENT:   
@@ -130,11 +130,12 @@ int main(int argc, const char * argv[])
 					break;
 				}
 				else if (pIndex < 0) //음수 입력 시 
-				{	//ifctdb_getData(pIndex);
+				{	
 					printf("There is no element of index %d.\n",pIndex);
 					break;
 				} 
 				//입력값 예외처리 (end)  
+				
 				
 				//정상적으로 작동하는 경우  
 				else if (pIndex >= 0 && pIndex < pTotal) 
@@ -144,13 +145,15 @@ int main(int argc, const char * argv[])
 					ifctele_printElement(ifct_element); //pIndex번째 환자정보 출력      
                 	break;
             	}
-        	}
+        	} //case MENU_PATIENT: 끝  
 			
 			//------------- MENU 2  --------------
             case MENU_PLACE: 
             {	resultCount=0; //값 초기화  
+            
 				printf("Place Name : ");
 				scanf("%s",&placeName); //도시명(문자열) 입력받기
+				
 				for (i=0;i<pTotal;i++) //해당 도시에서 감염된 사람 찾기위해서 환자 전체 수만큼 반복  
 				{
 					ifct_element = ifctdb_getData(i); //i번째 환자 정보 포인터에 담기  
@@ -164,7 +167,7 @@ int main(int argc, const char * argv[])
 				}  
 				printf("\nThere are %d patients detected in %s.\n",resultCount, placeName); //해당 장소에서 감염된 전체 사람 수 출력  
                 break;
-        	} 
+        	} //case MENU_PLACE: 끝  
         	
         	//------------- MENU 3  --------------
             case MENU_AGE: 
@@ -188,57 +191,69 @@ int main(int argc, const char * argv[])
 				for(i=0;i<pTotal;i++)
 				{
 					ifct_element = ifctdb_getData(i);
-					if ( ifctele_getAge(ifct_element) >= minAge   &&   ifctele_getAge(ifct_element) <=  maxAge)  //i번째 환자의 나이가 최소값이상 최대값이하인 경우  
+					if ( ifctele_getAge(ifct_element) >= minAge   &&   ifctele_getAge(ifct_element) <=  maxAge)  //i번째 환자의 나이가 최소값이상 최대값이하인 경우 (정상범위) 
 					{
 						ifctele_printElement(ifct_element); 
-						resultCount++; //해당 나이 범위에 속하는 환자 수 +1  
+						resultCount++; //마지막에 결과 출력을 위해 해당 나이 범위에 속하는 환자 수 +1  
 					}	
 				}    
 				printf("There are %d patients whose age is between %d and %d.\n",resultCount, minAge, maxAge); //해당 나이 범위에 속하는 환자 수 출력  
                 break;
-        	} 
+        	}//case MENU_AGE: 끝
         	
         	//------------- MENU 4  --------------
 			case MENU_TRACK:
 			{	 
 			 	printf("Patient index : "); 
             	scanf("%d",&pIndex);
+            	
+            	//입력값 예외처리(start)  
             	if (pIndex >= pTotal) //환자인덱스번호로 범위 초과하는 값 입력했을 경우   
 				{	printf("[ERROR] Your input for the patient index (%d) is wrong! input must be 0 ~ %d\n", pIndex,pTotal-1);
 					break;
 				}
-			 	firstPIndex = pIndex; //마지막에 출력할 때 사용하기 위해 첫번째 입력값 저장  
+				//입력값 예외처리(end) 
+				
+				 
+			 	firstPIndex = pIndex; //마지막에 출력할 때 사용하기 위해 입력값(환자번호) 저장  
 			 	
 				 //환자정보 가져오기  
 			 	ifct_element = ifctdb_getData(pIndex);
 				infectee = (void *)ifct_element;
 				
 				while ( pIndex >=0 ) //현재 환자가 있는 동안에만 반복  
-				{	spreaderPIndex= -1;
+				{	
+					spreaderPIndex= -1; //전파자번호 초기화(loop을 돌면서 전파자를 새로 찾아야하는데, 전파자가 없을 수도 있으니까 초기값 -1로 설정)  
 			 		infectee= ifctdb_getData(pIndex); //반복하면서 현재환자가 바뀌었을 수도 있으니 다시 환자정보 가져옴  
 			 		
-			 		infecteeDT = ifctele_getinfestedTime(infectee);//현재환자의 감염시점 
-            		detectedTime = &infecteeDT;//trackInfester함수의 매개변수로 쓰기 위해 포인터에 담음  
 			 		
+			 		//trackInfester 함수에 넘길 변수에 값 저장 (start)
+					 infecteeDT = ifctele_getinfestedTime(infectee);//현재환자의 감염시점 
+            		detectedTime = &infecteeDT;//trackInfester함수의 매개변수로 쓰기 위해 포인터에 담음  
 					infecteeDP = ifctele_getHistPlaceIndex(infectee, 4 ); //현재환자의 감염장소  
 					detectedPlace = &infecteeDP; //trackInfester함수의 매개변수로 쓰기 위해 포인터에 담음  
-			 		
+			 		//trackInfester 함수에 넘길 변수에 값 저장 (end) 
+					  
+					  
 					spreaderPIndex = trackInfester(pIndex,detectedTime ,detectedPlace ); //trackInfester 함수 결과값으로 대상환자 인덱스번호 저장  
 					
 					if (spreaderPIndex >= 0) //전파자 있으면 (초기값 -1에서 바뀌었으면) 
 					{	
 						spreader  = ifctdb_getData(spreaderPIndex); //전파자 정보 가져오기  
+						
+						//TRACKING결과 출력을 위해 변수에 값 저장(start) 
 						metTime =isMet(infectee,spreader); //전파자와 만난시점  
 						metTimeIndex =  metTime-infecteeDT+4;// 전파자와 만난시점의 인덱스 
 						metPlaceNum = ifctele_getHistPlaceIndex(infectee,metTimeIndex);  //전파자와 만난시점의 인덱스에 들어있는 도시번호  
+						//TRACKING결과 출력을 위해 변수에 값 저장(end) 
 						printf(" --> [TRACKING] patient %d is infected by %d (time : %d, place : %s)\n", 
 								                    	ifctele_getpIndex(infectee), spreaderPIndex, metTime ,ifctele_getPlaceName(metPlaceNum)); //현재환자인덱스번호,전파자인덱스번호,감염시점,감염장소(문자열) 
 						
 						//다음 전파자를 찾기 위해서 '현재환자'에 전파자 정보 넣기 
-						pIndex = ifctele_getpIndex(spreader);   
+						pIndex = ifctele_getpIndex(spreader); //이번 loop의 전파자의 pIndex를 다음 loop의 pIndex가 되도록 함.    
 						infectee = (void *)spreader ; //다음 loop에서 '현재환자'가 지금의 전파자로 대체됨. 
-						lastPIndex = pIndex; //가장 최근 환자 인덱스번호로 업데이트 (한명이라도 현재환자가 있던 경우에는 0이상의 숫자) 
-						loopCount ++; //전파자 찾기 횟수 카운트 +1 
+						lastPIndex = pIndex; //누구에게 감염된 것인지 출력할 때 사용하기 위해 가장 최근 환자 인덱스번호로 업데이트 (한명이라도 현재환자가 있던 경우에는 0이상의 숫자) 
+						loopCount ++; //while문 반복 횟수 카운트 +1 
 					}	
 					else if (spreaderPIndex == -1 )//전파자 없으면 (초기값 그대로 -1이면)
 					{   
@@ -247,18 +262,20 @@ int main(int argc, const char * argv[])
 							printf("%d is the first infector!!\n", ifctele_getpIndex(infectee));
 							pIndex =-1; //while문을 나가기 위해 -1 대입 
 						}//if문 끝  
-						else if (loopCount > 0 ) //마지막 추적의 결과인 경우 (ex-전파자의 전파자의 전파자의 전파자의....... 
+						else if (loopCount > 0 ) //마지막 추적의 결과인 경우 (ex-전파자의 전파자의 전파자의 전파자의.......전파자! )
 						{
 							pIndex =-1; //whle문을 나가기 위해서 -1 대입 
 							printf("The first infector of %d is %d\n" , firstPIndex ,lastPIndex);
 						}//else if 문(2)  끝
 					}//else-if문(1)  끝
 				}//while 문  끝  
+				loopCount = 0; //반복 끝났으니까 반복횟수 0으로 초기화  
 				break; 
        		}//case MENU_TRACK: 끝  
 		    default:
-		        printf("[ERROR Wrong menu selection! (%i), please choose between 0 ~ 4\n", menu_selection);
+		    {   printf("[ERROR Wrong menu selection! (%i), please choose between 0 ~ 4\n", menu_selection);
 		        break;
+		    }//case default: 끝  
 		}//switch문 끝  
 	}	while(menu_selection != 0);  //do-while문 끝 
    	return 0;	

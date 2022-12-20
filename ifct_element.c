@@ -55,7 +55,7 @@ typedef enum place {
     CapeTown        //39
 } place_t; 
 
-
+ 
 
 //도시 번호=>도시명(문자열)  
 char countryName[N_PLACE+1][MAX_PLACENAME] =

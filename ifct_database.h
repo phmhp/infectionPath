@@ -1,4 +1,4 @@
-// 
+//  
 //  ifct_database.h
 //  infection Path
 //
